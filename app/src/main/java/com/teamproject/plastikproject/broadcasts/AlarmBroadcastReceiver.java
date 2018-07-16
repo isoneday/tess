@@ -34,8 +34,8 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getExtras() != null) {
-            SessionManager manager =new SessionManager(context);
-            int id = Integer.parseInt(manager.getIdincre());
+  //          SessionManager manager =new SessionManager(context);
+//            int id = Integer.parseInt(manager.getIdincre());
             Log.i("Service Stops", "Ohhhhhhh");
             context.startService(new Intent(context, WritePurchaseListService.class));;
             Long dbId = intent.getExtras().getLong(AppConstants.EXTRA_LIST_ID, -1);

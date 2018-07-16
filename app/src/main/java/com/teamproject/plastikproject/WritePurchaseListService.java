@@ -37,6 +37,7 @@ public class WritePurchaseListService extends IntentService {
     protected void onHandleIntent(Intent intent) {
 
         manager = new SessionManager(getApplicationContext());
+        purchaseList = (PurchaseListModelbar) intent.getExtras().getSerializable(LIST_EXTRA);
 
         if (purchaseList != null) {
             if (purchaseList.getIdUser() < 0) {
@@ -178,10 +179,5 @@ public class WritePurchaseListService extends IntentService {
         sendBroadcast(intent);
     }
 
-    @Override
-    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
-        purchaseList = (PurchaseListModelbar) intent.getExtras().getSerializable(LIST_EXTRA);
 
-        return super.onStartCommand(intent, flags, startId);
-    }
 }

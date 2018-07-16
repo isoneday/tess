@@ -950,9 +950,6 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
 //                }
         timeText.setText(waktujam);
 
-                    getActivity().startService(new Intent(getContext(), WritePurchaseListService.class)
-                            .putExtra(WritePurchaseListService.LIST_EXTRA, purchaseList));
-
                 } else {
                     timeText.setText("empty");
                   //  alarmUtils.cancelListAlarm(purchaseList);
@@ -1092,7 +1089,11 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
             getLoaderManager().destroyLoader(LOADER_ITEM_ID);
         }
         int da = Integer.parseInt(String.valueOf(purchaseList.getIdUser()));
-
+        if (getActivity() != null) {
+            getActivity().startService(new Intent(getContext(), WritePurchaseListService.class)
+                            .putExtra(WritePurchaseListService.LIST_EXTRA, purchaseList)
+            );
+        }
         if (getActivity() != null) {
             if (da != 0) {
                 if (!TextUtils.equals(listNameEdit.getText().toString(), purchaseList.getDay())) {
@@ -1103,7 +1104,7 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
 
                     }
 
-                    updateList();
+                  //  updateList();
                 }
                 long data =purchaseList.getTime();
                 //creating Date from millisecond
