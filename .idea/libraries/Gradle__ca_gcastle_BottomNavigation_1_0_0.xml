@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: ca.gcastle:BottomNavigation-1.0.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/BottomNavigation-1.0.0.aar/d10e0b67f1d14a3ca92a620a05651fa9/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/BottomNavigation-1.0.0.aar/d10e0b67f1d14a3ca92a620a05651fa9/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/ca.gcastle/BottomNavigation/1.0.0/341d9ebce05e91904a8256502e168ee5a2dc4064/BottomNavigation-1.0.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
