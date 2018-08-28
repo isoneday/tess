@@ -47,12 +47,7 @@ public class LoginActivity extends SessionManager {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-//
-//        if (regAdmin.isChecked()){
-//            strlevel="admin";
-//        }else{
-//            strlevel="user biasa";
-//        }
+
     }
 
     @OnClick({R.id.regBtnLogin, R.id.regBtnRegister,R.id.regforgotpass})
@@ -71,11 +66,11 @@ public class LoginActivity extends SessionManager {
 //                break;
             case R.id.regBtnLogin:
                 if (TextUtils.isEmpty(strusername)) {
-                    regUsername.setError("username tidak boleh kosong");
+                    regUsername.setError(getString(R.string.emailempty));
                 } else if (TextUtils.isEmpty(strpassword)) {
-                    regPass.setError("password tidak boleh kosong");
+                    regPass.setError(getString(R.string.passwordempty));
                 } else if (strpassword.length() < 6) {
-                    regPass.setError("minimal password 6 karakter");
+                    regPass.setError(getString(R.string.minimumpassword));
                 } else {
                     loginuser();
                 }
@@ -87,7 +82,7 @@ public class LoginActivity extends SessionManager {
             case  R.id.regforgotpass:
                 final Dialog dialog = new Dialog(LoginActivity.this);
                 dialog.setContentView(R.layout.lupapassword);
-                dialog.setTitle("Lupa Password");
+                dialog.setTitle(R.string.forgetpassword);
                 dialog.show();
                 final EditText edtemaillamat = (EditText)dialog.findViewById(R.id.edtemaillama);
                 Button btnlupapas = (Button)dialog.findViewById(R.id.btnlupapass);
@@ -96,17 +91,17 @@ public class LoginActivity extends SessionManager {
                     public void onClick(View v) {
                         String emaillama =edtemaillamat.getText().toString();
                         if (TextUtils.isEmpty(emaillama)){
-                            edtemaillamat.setError("email tidak boleh kosong");
+                            edtemaillamat.setError(getString(R.string.emailempty));
                             edtemaillamat.requestFocus();
                         }else{
-                            showProgressDialog("proses .....");
+                            showProgressDialog(getString(R.string.prosess));
             RestApi api =MyRetrofitClient.getInstaceRetrofit();
             Call<ModelForgot> userCall = api.forgotpassword(emaillama);
             userCall.enqueue(new Callback<ModelForgot>() {
                 @Override
                 public void onResponse(Call<ModelForgot> call, Response<ModelForgot> response) {
                     hideProgressDialog();
-                    Toast.makeText(LoginActivity.this, "Check Your Email To Reset Password", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, R.string.checkyouremail, Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
                 }
 
@@ -127,7 +122,7 @@ public class LoginActivity extends SessionManager {
     }
 
     private void loginuser() {
-        showProgressDialog("proses login user");
+        showProgressDialog(getString(R.string.processlogin));
         RestApi api = MyRetrofitClient.getInstaceRetrofit();
         Call<ModelUser> modelUserCall = api.loginUser(
                 strusername, strpassword);
@@ -142,12 +137,13 @@ public class LoginActivity extends SessionManager {
                     Log.d("testaja", token);
                     sessionManager.createSession(strusername);
                     sessionManager.setIdUser(userid);
+                    myToast("SUCCESSFULL");
                     sessionManager.setToken(token);
 //ASU6fXPWzLCbrf8Wt6fiynINiISpHcndJM5dwRsZsehhyKW2KDL25rWTOGIu4RVl
                     myIntent(HalamanBaggingActivity.class);
                     finish();
                 } else {
-                    myToast("gagal login,cek email anda");
+                    myToast(getString(R.string.checkyouremailconf));
                 }
                 //                if (result.equals("1")) {
 //                myToast(msg);
@@ -164,7 +160,7 @@ public class LoginActivity extends SessionManager {
             @Override
             public void onFailure(Call<ModelUser> call, Throwable t) {
                 hideProgressDialog();
-                myToast("gagal koneksi :" + t.getMessage());
+                myToast(getString(R.string.checkyourconnection) + t.getMessage());
 
             }
         });

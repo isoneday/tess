@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.teamproject.plastikproject.R;
 
@@ -39,20 +40,11 @@ public class StatisticFragment extends Fragment {
         unbinder = ButterKnife.bind(this, view);
         webstatistic.getSettings().setJavaScriptEnabled(true);
         getActivity().setTitle("Statistic");
-        webstatistic.setWebChromeClient(new WebChromeClient() {
-            private ProgressDialog mProgress;
-
+        webstatistic.setWebViewClient(new WebViewClient(){
             @Override
-            public void onProgressChanged(WebView view, int progress) {
-                if (mProgress == null) {
-                    mProgress = new ProgressDialog(getActivity());
-                    mProgress.show();
-                }
-                mProgress.setMessage("Loading " + String.valueOf(progress) + "%");
-                if (progress == 100) {
-                    mProgress.dismiss();
-                    mProgress = null;
-                }
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                view.loadUrl(url);
+                return super.shouldOverrideUrlLoading(view, url);
             }
         });
         webstatistic.loadUrl("http://www.theworldcounts.com/counters/waste_pollution_facts/plastic_bags_used_per_year");

@@ -100,8 +100,8 @@
     <string name="by_creating_an_account_you_agree_term">By creating an account you agree <u>Term</u></string>
     <string name="facebook_app_id">225971688167097</string>
     <string name="fb_login_protocol_scheme">fb225971688167097</string>
-    <string name="fragment_login_password_hint">inputkan password</string>
-    <string name="fragment_login_passfiword_hintcon">inputkan password confirm</string>
+    <string name="fragment_login_password_hint">password</string>
+    <string name="fragment_login_passfiword_hintcon">password confirm</string>
 
     <string name="loading">lagi loading</string>
     <string name="title_activity_makanan">MakananActivity</string>
@@ -154,4 +154,132 @@
     <string name="alarmSaved">Alarm Saved</string>
     <string name="ignoreNfcTagIdTitle">Ignore NFC tag ID</string>
     <string name="ignoreNfcTagIdSummary">If this is set Terminightor will not check the ID of an Nfc tag, when switching an alarm off.</string>
+    <string name="app_title">Are We There Yet?</string>
+
+    <string name="action_delete_all">Delete All Shopping Locations</string>
+
+    <!-- Dialogs -->
+    <string name="AreYouSure">Are you sure?</string>
+    <string name="Yes">Yes</string>
+    <string name="No">No</string>
+    <string name="Add">Add</string>
+    <string name="Cancel">Cancel</string>
+
+    <!-- Button -->
+    <string name="Button.DeleteGeofence">DELETE</string>
+
+    <!-- Labels -->
+    <string name="Label.Name">Name</string>
+    <string name="Label.Latitude">Latitude</string>
+    <string name="Label.Longitude">Longitude</string>
+    <string name="Label.Radius">Radius</string>
+    <string name="Label.AddGeofence">Add a new Shopping Location</string>
+    <string name="Label.EmptyState">You haven\'t created any Shopping Locations yet. Tap the plus button to create one.\n\n\nWill we ever get there?! :]</string>
+
+    <!-- Hints -->
+    <string name="Hint.Name">Name for the Shopping Location</string>
+    <string name="Hint.Latitude" formatted="false">Location Shopping</string>
+    <!--<string name="Hint.Latitude" formatted="false">Latitude (%3.1f\u00B0 to %3.1f\u00B0)</string>-->
+    <string name="Hint.Longitude" formatted="false">Longitude (%4.1f\u00B0 to %4.1f\u00B0) </string>
+    <string name="Hint.Radius" formatted="false">Radius (%3.2f to %3.1f km)</string>
+
+    <!-- Units -->
+    <string name="Units.Degrees">\u00B0</string>
+    <string name="Units.Kilometers">km</string>
+
+    <!-- Notification -->
+    <string name="Notification.Title">Dont Forget Shopping Bag</string>
+    <!--<string name="Notification.Text">We\'re at %1$s!!!</string>-->
+<string name="Notification.Text">YOU ARE APPROACHING YOUR STORE, DONT FORGET YOUR SHOPPING BAG!!!</string>
+
+    <!-- Toast -->
+    <string name="Toast.Validation">Please enter valid data for all fields</string>
+    <string name="Toast.Error">There was an error. Please try again.</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="ringActivityTitle">Ring selection</string>
+    <string name="remindActivityTitle">Choose type of remind</string>
+    <string name="repeatChoiceActivityTitle">Repeat days</string>
+    <string name="deleteActivityTitle">Confirm to delete?</string>
+    <string name="addAlarmActivityTitle">Add alarm</string>
+    <string name="editAlarmActivityTitle">Edit alarm</string>
+
+    <!--alarm utils-->
+    <string name="saturday">Sat</string>
+    <string name="friday">Fri</string>
+    <string name="thursday">Thu</string>
+    <string name="wednesday">Wed</string>
+    <string name="tuesday">Tue</string>
+    <string name="monday">Mon</string>
+    <string name="sunday">Sun</string>
+    <string name="timeNull" translatable="false">--:--</string>
+    <string name="OK">OK</string>
+    <string name="failure_network">Failure network connection</string>
+
+    <!--alarm activity-->
+    <string name="time" translatable="false">00</string>
+    <string name="timePoint" translatable="false">:</string>
+    <string name="alarmSwitchWeather">Include weather</string>
+    <string name="alarmSwitchVibration">Vibration</string>
+    <string name="alarmRepeat">Repeat</string>
+    <string name="alarmRepeatChoice">Only once</string>
+    <string name="alarmRingtone">Ringtone</string>
+    <string name="alarmRingChoice" translatable="false">Raindrop</string>
+    <string name="alarmRemind">Later remind</string>
+    <string name="alarm_remind_content">Three minutes</string>
+
+    <!--remind activity-->
+    <string name="remindThreeMinutes">Three minutes</string>
+    <string name="remindFiveMinutes">Five minutes</string>
+    <string name="remindTenMinutes">Ten minutes</string>
+    <string name="remindTwentyMinutes">Twenty minutes</string>
+    <string name="remindHalfHour">Half an hour</string>
+
+    <!--repeat activity-->
+    <string name="repeatActivityTitle">Repeat time</string>
+    <string name="repeatOnce">Only once</string>
+    <string name="repeatWeekDay">Week days</string>
+    <string name="repeatEveryDay">Every day</string>
+    <string name="repeatWeekend">Weekend</string>
+    <string name="repeatChoice">Your choice</string>
+
+    <!--settings activity-->
+    <string name="settings_weather">Weather</string>
+
+    <string name="settings_location_city_title">Change city</string>
+    <string name="settings_location_city_summary">Currently: %s</string>
+    <string name="pref_city_default">Ivano-Frankivsk</string>
+    <string name="pref_city_key" translatable="false">settings_edit_city_name</string>
+
+    <string name="pref_temp_format_title">Temperature Format</string>
+    <string name="pref_default_temp_format" translatable="false">Celsius</string>
+    <string name="pref_temp_format_key" translatable="false">settings_list_temp_format</string>
+    <string name="pref_temp_celsius" translatable="false">Celsius</string>
+    <string name="pref_temp_fahrenheit" translatable="false">Fahrenheit</string>
+    <string name="current_weather">Current Weather</string>
+    <string name="weather_update">Weather is updating…</string>
+    <string name="cel" translatable="false">" °C"</string>
+    <string name="fahr" translatable="false">" °F"</string>
+    <string-array name="pref_temp_format_value" translatable="false">
+        <item>Fahrenheit</item>
+        <item>Celsius</item>>
+    </string-array>
+    <string-array name="pref_temp_format" translatable="false">
+        <item>Fahrenheit</item>
+        <item>Celsius</item>
+    </string-array>
+    <string name="alarmRemindChoice">Three minutes</string>
+    <string name="usernameempty">USERNAME CAN’T BE EMPTY</string>
+    <string name="passwordempty">PASSWORD CAN’T BE EMPTY</string>
+    <string name="passwordconempty">password confirm can not be empty</string>
+    <string name="minimumpassword">password must contain at least 6 characters</string>
+    <string name="forgetpassword">Forget Password</string>
+    <string name="emailempty">EMAIL CAN’T BE EMPTY</string>
+    <string name="prosess">process .....</string>
+    <string name="checkyouremail">Check Your Email To Reset Password</string>
+    <string name="processlogin">process login user</string>
+    <string name="checkyouremailconf">login failed,check your email to confirmation</string>
+    <string name="checkyourconnection">check your connection :</string>
+    <string name="nameempty">name can not be empty</string>
+    <string name="passwordmissmatch">password confirm mismatch</string>
+
 </resources>

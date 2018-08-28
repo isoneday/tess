@@ -72,6 +72,24 @@ public class SessionManager extends MyFuction {
     public String getIdUser() {
         return pref.getString("iduser", "");
     }
+   public void setTropy(String iduser) {
+        editor.putBoolean(is_login, true);
+        editor.putString("tropy", iduser);
+        editor.commit();
+    }
+
+    public String getTropy() {
+        return pref.getString("tropy", "");
+    }
+   public void setEmail(String iduser) {
+        editor.putBoolean(is_login, true);
+        editor.putString("email", iduser);
+        editor.commit();
+    }
+
+    public String getEmail() {
+        return pref.getString("email", "");
+    }
     public void setidincre(String iduser) {
         editor.putBoolean(is_login, true);
         editor.putString("incre", iduser);

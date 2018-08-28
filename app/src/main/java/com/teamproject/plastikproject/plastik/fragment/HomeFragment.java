@@ -2,6 +2,7 @@ package com.teamproject.plastikproject.plastik.fragment;
 
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
@@ -24,8 +26,15 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.teamproject.plastikproject.AppClass;
 import com.teamproject.plastikproject.R;
 import com.teamproject.plastikproject.activities.PurchaseActivity;
+import com.teamproject.plastikproject.alarmapp.ui.activity.MainActivity;
+import com.teamproject.plastikproject.fragments.MapFragment;
 import com.teamproject.plastikproject.plastik.activity.MapSmartAreActivity;
 import com.teamproject.plastikproject.plastik.activity.ShoppingLocationActivity;
+import com.teamproject.plastikproject.plastik.helper.SessionManager;
+import com.teamproject.plastikproject.plastik.model.ResponseDataUser;
+import com.teamproject.plastikproject.plastik.model.ResponseUser;
+import com.teamproject.plastikproject.plastik.network.MyRetrofitClient;
+import com.teamproject.plastikproject.plastik.network.RestApi;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,7 +43,9 @@ import org.json.JSONObject;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -42,6 +53,8 @@ import in.myinnos.imagesliderwithswipeslibrary.Animations.DescriptionAnimation;
 import in.myinnos.imagesliderwithswipeslibrary.SliderLayout;
 import in.myinnos.imagesliderwithswipeslibrary.SliderTypes.BaseSliderView;
 import in.myinnos.imagesliderwithswipeslibrary.SliderTypes.TextSliderView;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 import static com.teamproject.plastikproject.plastik.helper.MyConstant.GETIMAGEURL;
 
@@ -56,9 +69,66 @@ public class HomeFragment extends Fragment implements BaseSliderView.OnSliderCli
     HashMap<String, String> url_maps;
     ImageView imglocation,imgstatistic;
     private ImageView imgschedule;
+    private ImageView imgearth;
+    private TextView txtjumlahtropy;
+    SessionManager manager ;
+    private List<ResponseUser> listdatauser;
 
     public HomeFragment() {
         // Required empty public constructor
+    }
+
+//    @Override
+//    public void onAttach(Context context) {
+//
+//
+//        super.onAttach(context);
+//    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getdatauserbaru();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+       getdatauserbaru();
+    }
+
+    private void getdatauserbaru() {
+        RestApi api = MyRetrofitClient.getInstaceRetrofit();
+
+        final SessionManager ge = new SessionManager(getActivity());
+        String id = ge.getIdUser();
+        Call<ResponseDataUser> userCall =api.getdatauser(id);
+        userCall.enqueue(new Callback<ResponseDataUser>() {
+            @Override
+            public void onResponse(Call<ResponseDataUser> call, retrofit2.Response<ResponseDataUser> response) {
+
+                if (response.isSuccessful()) {
+                    listdatauser = new ArrayList<ResponseUser>();
+
+                    listdatauser = response.body().getResponse();
+                    final String[] itemtropy = new String[listdatauser.size()];
+
+
+                    for (int i = 0; i < listdatauser.size(); i++) {
+                        //Storing names to string array
+                        itemtropy[i] = String.valueOf(listdatauser.get(i).getThropy());
+                        //       Toast.makeText(getApplicationContext(), " banyak button" + itemsnama, Toast.LENGTH_LONG).show();
+
+                    }
+                    ge.setTropy(itemtropy[0]);
+                }
+            }
+            @Override
+            public void onFailure(Call<ResponseDataUser> call, Throwable t) {
+
+            }
+        });
     }
 
 
@@ -67,10 +137,22 @@ public class HomeFragment extends Fragment implements BaseSliderView.OnSliderCli
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+        manager = new SessionManager(getActivity());
         imglocation = (ImageView) view.findViewById(R.id.imglocation);
         imgstatistic = (ImageView) view.findViewById(R.id.imgstatistic);
-
+        imgearth = (ImageView) view.findViewById(R.id.imgearthhero);
+        txtjumlahtropy =(TextView) view.findViewById(R.id.txtjumlahtropy);
         imgschedule = (ImageView) view.findViewById(R.id.imgshoppingschedule);
+        txtjumlahtropy.setText(manager.getTropy()+"pts");
+        imgearth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment fragCategory = new EarthHeroFragment();
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.container, fragCategory);
+                transaction.commit();
+            }
+        });
         imgstatistic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -84,16 +166,20 @@ public class HomeFragment extends Fragment implements BaseSliderView.OnSliderCli
         imglocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Fragment fragCategory = new MapFragment();
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.container, fragCategory);
+                transaction.commit();
 //             startActivity(new Intent(getActivity(), PlacesActivity.class));
-             startActivity(new Intent(getActivity(), MapSmartAreActivity.class));
+      //       startActivity(new Intent(getActivity(), MapSmartAreActivity.class));
             }
         });
         imgschedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-             startActivity(new Intent(getActivity(), PurchaseActivity.class));
+             startActivity(new Intent(getActivity(), MainActivity.class));
+
             }
         });
         mDemoSlider = (SliderLayout)view.findViewById(R.id.slider);
@@ -156,7 +242,8 @@ public class HomeFragment extends Fragment implements BaseSliderView.OnSliderCli
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getActivity(), "network issue: please enable wifi/mobile data"+error.getMessage(), Toast.LENGTH_SHORT).show();
+//
+//                Toast.makeText(getActivity(), "network issue: please enable wifi/mobile data"+error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -177,6 +264,7 @@ public class HomeFragment extends Fragment implements BaseSliderView.OnSliderCli
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+        getdatauserbaru();
     }
 
     @SuppressLint("RestrictedApi")
@@ -203,6 +291,7 @@ public class HomeFragment extends Fragment implements BaseSliderView.OnSliderCli
         // To prevent a memory leak on rotation, make sure to call stopAutoCycle() on the slider before activity or fragment is destroyed
         mDemoSlider.stopAutoCycle();
         super.onStop();
+
     }
 
     @Override

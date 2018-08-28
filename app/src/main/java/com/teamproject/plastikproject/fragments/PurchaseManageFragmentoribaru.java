@@ -7,6 +7,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -42,8 +44,8 @@ import retrofit2.Response;
 /**
  * Created by rage on 08.02.15. Create by task: 004
  */
-public class PurchaseManageFragmentoribaru extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    private static final String TAG = PurchaseManageFragmentoribaru.class.getSimpleName();
+public class PurchaseManageFragmentoribaru extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,PurchaseEditFragmentbaru.Ongetdatalagi {
+    public static final String TAGPUR = PurchaseManageFragmentoribaru.class.getSimpleName();
     //private static final String ARG_MENU_ID = "argMenuId";
     private static final String STATE_LIST = "PurchaseListState";
 
@@ -71,9 +73,18 @@ public class PurchaseManageFragmentoribaru extends BaseFragment implements Loade
     }
 
     @Override
+    public void onResume() {
+        // Reload current fragment
+
+        super.onResume();
+    }
+
+
+
+    @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_purchase_manage, container, false);
-        addToolbar(view);
+       // addToolbar(view);
         purchaseView = (ListView) view.findViewById(R.id.purchase_view);
         progressBar = view.findViewById(R.id.progress_bar);
         floatPlus = view.findViewById(R.id.plus_button);
@@ -85,6 +96,10 @@ public class PurchaseManageFragmentoribaru extends BaseFragment implements Loade
         super.onViewCreated(view, savedInstanceState);
 
         progressBar.setVisibility(View.VISIBLE);
+       getdata();
+    }
+
+    public void getdata() {
         RestApi api = MyRetrofitClient.getInstaceRetrofit();
         SessionManager manager = new SessionManager(getActivity());
         String id =manager.getIdUser();
@@ -93,23 +108,23 @@ public class PurchaseManageFragmentoribaru extends BaseFragment implements Loade
         call.enqueue(new Callback<ResponseDataSkeduleuser>() {
             @Override
             public void onResponse(Call<ResponseDataSkeduleuser> call, Response<ResponseDataSkeduleuser> response) {
-           //     Toast.makeText(getContext(), "ada ", Toast.LENGTH_SHORT).show();
+                //     Toast.makeText(getContext(), "ada ", Toast.LENGTH_SHORT).show();
                 progressBar.setVisibility(View.GONE);
 
                 responsedaskes =new ArrayList<>();
                 responsedaskes =response.body().getResponse();
 
-                 //   adapter = new PurchaseListAdapter(getContext(),responsedaskes);
-                    adapter = new PurchaseListAdapter(getContext(),responsedaskes);
-                   purchaseView.setAdapter(adapter);
+                //   adapter = new PurchaseListAdapter(getContext(),responsedaskes);
+                adapter = new PurchaseListAdapter(getActivity(),responsedaskes);
+                purchaseView.setAdapter(adapter);
 
-           //     getLoaderManager().initLoader(0, null, PurchaseManageFragmentoribaru.this);
+                //     getLoaderManager().initLoader(0, null, PurchaseManageFragmentoribaru.this);
 
             }
 
             @Override
             public void onFailure(Call<ResponseDataSkeduleuser> call, Throwable t) {
-                Toast.makeText(getContext(), "gak ada daatanih", Toast.LENGTH_SHORT).show();
+          //      Toast.makeText(getContext(), "gak ada daatanih", Toast.LENGTH_SHORT).show();
                 progressBar.setVisibility(View.GONE);
 
             }
@@ -118,7 +133,7 @@ public class PurchaseManageFragmentoribaru extends BaseFragment implements Loade
         purchaseView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            String alarmwaktu = String.valueOf(System.currentTimeMillis());
+                String alarmwaktu = String.valueOf(System.currentTimeMillis());
 
                 //                int idd=responsedaskes.get(position).getIdIncrement();
 //
@@ -152,7 +167,11 @@ public class PurchaseManageFragmentoribaru extends BaseFragment implements Loade
         floatPlus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                purchaseListMainFragmentListener.onPurchaseListMainFragmentClickListener();
+              //  purchaseListMainFragmentListener.onPurchaseListMainFragmentClickListener();
+                PurchaseEditFragmentbaru fragmentbaru =new PurchaseEditFragmentbaru();
+                fragmentbaru.setTargetFragment(PurchaseManageFragmentoribaru.this,1);
+                fragmentbaru.show(getFragmentManager(),"PurchaseEditFragmentbaru");
+
             }
         });
 
@@ -267,6 +286,12 @@ public class PurchaseManageFragmentoribaru extends BaseFragment implements Loade
     public void onLoaderReset(Loader<Cursor> loader) {
         //adapter.changeCursor(null);
     }
+
+    @Override
+    public void getdatalagi() {
+        getdata();
+    }
+
 
     public interface OnPurchaseListMainFragmentListener {
         void onPurchaseListMainFragmentClickListener();

@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.teamproject.plastikproject" >
+    package="com.teamproject.plastikproject">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-
-
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
+
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
 
 
     <uses-feature
@@ -26,71 +28,61 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_baggit"
         android:label="@string/app_name"
-        android:theme="@style/ASlistTheme" >
+        android:theme="@style/ASlistTheme">
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
         <!--<meta-data-->
-            <!--android:name="com.google.android.maps.v2.API_KEY"-->
-            <!--android:value="@string/google_maps_key" />-->
-    <activity android:name=".activities.PurchaseActivity"></activity>
+        <!--android:name="com.google.android.maps.v2.API_KEY"-->
+        <!--android:value="@string/google_maps_key" />-->
+        <activity android:name=".activities.PurchaseActivity"></activity>
         <activity android:name=".activities.MapActivityOri"></activity>
         <activity android:name=".activities.PlacesActivityOri"></activity>
-        <activity
-            android:name=".activities.LoginActivity"
-            android:label="@string/app_name" >
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
-        </activity>
+        <service android:name=".plastik.notif.AreWeThereIntentService"
+            android:enabled="true"
+            android:exported="true"></service>
+
         <activity android:name=".plastik.activity.MapSmartAreActivity">
 
         </activity>
         <activity
             android:name=".activities.PlacesActivity"
-            android:label="@string/app_name" >
-        </activity>
+            android:label="@string/app_name"></activity>
         <activity
             android:name=".activities.MapActivity"
             android:label="@string/app_name"
-            android:windowSoftInputMode="stateAlwaysHidden" >
-        </activity>
+            android:windowSoftInputMode="stateAlwaysHidden"></activity>
         <activity
             android:name=".activities.UserActivity"
-            android:label="@string/app_name" >
-        </activity>
+            android:label="@string/app_name"></activity>
 
         <service
             android:name=".services.GpsAppointmentService"
             android:process=":gps_appointment_service" />
 
-        <service android:name=".services.GeoLocationService"
-            android:exported="false"/>
+        <service
+            android:name=".services.GeoLocationService"
+            android:exported="false" />
 
-        <service android:name=".WritePurchaseListService"
-            android:exported="true"
-            android:enabled="true">
-            <intent-filter>
-                <action android:name="com.teamproject.plastikprojectku" />
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </service>
+        <service
+            android:name=".WritePurchaseListService"
+            android:enabled="true"
+            android:exported="true"></service>
+
         <provider
             android:name=".helpers.ShoppingContentProvider"
             android:authorities="${applicationId}.provider"
-            android:process=":content"
             android:enabled="true"
-            android:exported="false" >
-        </provider>
+            android:exported="false"
+            android:process=":content"></provider>
 
         <meta-data
             android:name="com.crashlytics.ApiKey"
             android:value="8320f4f5acb21ff81d1b7b411decc230244e2fae" />
 
 
-        <activity android:name=".plastik.ShopingScheduleActivity"/>
+        <activity android:name=".plastik.ShopingScheduleActivity" />
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
@@ -113,9 +105,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".plastik.HalamanUtamaActivity"></activity>
-        <activity android:name=".plastik.RegisterActivity"
+        <activity
+            android:name=".plastik.RegisterActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar"></activity>
-        <activity android:name=".plastik.LoginActivity"
+        <activity
+            android:name=".plastik.LoginActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar"></activity>
         <activity android:name=".plastik.activity.SplashScreenActivity">
             <intent-filter>
@@ -128,22 +122,56 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-<activity android:name=".plastik.activity.HalamanBaggingActivity"
-    android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".plastik.activity.HalamanBaggingActivity"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity android:name=".plastik.activity.ShoppingLocationActivity"></activity>
-        <receiver android:name=".broadcasts.AutoStartBroadcastReceiver">
+        <!--<receiver android:name=".broadcasts.AutoStartBroadcastReceiver">-->
+        <!--<intent-filter>-->
+        <!--<action android:name="android.intent.action.BOOT_COMPLETED" />-->
+        <!--</intent-filter>-->
+        <!--</receiver>-->
+
+        <receiver android:name=".broadcasts.AlarmBroadcastReceiver"></receiver>
+
+        <activity android:name=".alarmapp.ui.activity.MainActivity"></activity>
+        <activity android:name=".alarmapp.ui.activity.AddAlarmActivity">
+
+        </activity>
+        <activity android:name=".alarmapp.ui.activity.BootAlarmActivity"></activity>
+        <activity android:name=".alarmapp.ui.activity.EditAlarmActivity"></activity>
+        <activity android:name=".alarmapp.ui.activity.RingActivity"></activity>
+        <activity android:name=".alarmapp.ui.activity.RemindActivity"></activity>
+        <activity android:name=".alarmapp.ui.activity.DayActivity"></activity>
+        <activity android:name=".alarmapp.ui.activity.RepeatActivity"></activity>
+        <activity android:name=".alarmapp.ui.activity.RepeatChoiceActivity"></activity>
+        <activity android:name=".alarmapp.ui.activity.DeleteActivity"></activity>
+
+        <receiver
+            android:name=".alarmapp.ui.receiver.AlarmClockReceiver"
+            android:enabled="true"
+            android:exported="true"></receiver>
+        <service
+            android:name=".alarmapp.service.AlarmClockService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <receiver
+            android:name="alarmapp.ui.receiver.BootReceiver"
+            android:enabled="true"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+        <activity android:name=".plastik.notif.MainActivityTesting">
 
-        <receiver android:name=".broadcasts.AlarmBroadcastReceiver" >
-            <intent-filter>
-                <action android:name="com.teamproject.plastikprojectku" />
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
+        </activity>
 
+        <service
+            android:name=".plastik.notif.GeofenceRegistrationService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

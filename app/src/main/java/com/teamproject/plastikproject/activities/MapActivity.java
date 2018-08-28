@@ -458,7 +458,7 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
 //            placesModel.setGpsLatitude(marker.getPosition().latitude);
 //            placesModel.setGpsLongitude(marker.getPosition().longitude);
             //todo tambahan add
-            savekesever();
+            //savekesever();
 //            new Thread(new Runnable() {
 //                @Override
 //                public void run() {
@@ -477,35 +477,35 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
         super.onBackPressed();
     }
 
-    private void savekesever() {
-        RestApi api = MyRetrofitClient.getInstaceRetrofit();
-        String lon = String.valueOf(marker.getPosition().longitude);
-        String lat = String.valueOf(marker.getPosition().latitude);
-        Call<ResponseAddLokasi> addLokasiCall = api.addlokasi(lon,
-                lat, placeNameEdit.getText().toString());
-
-        addLokasiCall.enqueue(new Callback<ResponseAddLokasi>() {
-            @Override
-            public void onResponse(Call<ResponseAddLokasi> call, Response<ResponseAddLokasi> response) {
-                if (response.isSuccessful()) {
-                    int resultok = response.body().getResponse().getResult().getOk();
-                    if (resultok == 1) {
-                        Toast.makeText(MapActivity.this, "berhasil" + "\n" + response.body().getResponse(), Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(MapActivity.this, "maaf gagal", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(MapActivity.this, "gagal ambil data", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseAddLokasi> call, Throwable t) {
-                Toast.makeText(MapActivity.this, "gagal ya" + t.getMessage(), Toast.LENGTH_SHORT).show();
-
-            }
-        });
-    }
+//    private void savekesever() {
+//        RestApi api = MyRetrofitClient.getInstaceRetrofit();
+//        String lon = String.valueOf(marker.getPosition().longitude);
+//        String lat = String.valueOf(marker.getPosition().latitude);
+//        Call<ResponseAddLokasi> addLokasiCall = api.addlokasi(lon,
+//                lat, placeNameEdit.getText().toString());
+//
+//        addLokasiCall.enqueue(new Callback<ResponseAddLokasi>() {
+//            @Override
+//            public void onResponse(Call<ResponseAddLokasi> call, Response<ResponseAddLokasi> response) {
+//                if (response.isSuccessful()) {
+//                    int resultok = response.body().getResponse().getResult().getOk();
+//                    if (resultok == 1) {
+//                        Toast.makeText(MapActivity.this, "berhasil" + "\n" + response.body().getResponse(), Toast.LENGTH_LONG).show();
+//                    } else {
+//                        Toast.makeText(MapActivity.this, "maaf gagal", Toast.LENGTH_SHORT).show();
+//                    }
+//                } else {
+//                    Toast.makeText(MapActivity.this, "gagal ambil data", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<ResponseAddLokasi> call, Throwable t) {
+//                Toast.makeText(MapActivity.this, "gagal ya" + t.getMessage(), Toast.LENGTH_SHORT).show();
+//
+//            }
+//        });
+//    }
 
     //update data
     private void savePosition() {

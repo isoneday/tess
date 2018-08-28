@@ -29,7 +29,7 @@
     <dimen name="purchase_item_hide_panel_height_negative">-171dp</dimen>
     <integer name="purchase_item_panel_time">300</integer>
 
-    <dimen name="bottom_toolbar_height">48dp</dimen>
+    <dimen name="bottom_toolbar_height">40dp</dimen>
     <dimen name="bottom_toolbar_padding">6dp</dimen>
     <dimen name="bottom_toolbar_time_layout_size">42dp</dimen>
     <dimen name="bottom_toolbar_spinner_width">140dp</dimen>
@@ -47,5 +47,22 @@
 
     <integer name="fab_button_hide_time">400</integer>
     <dimen name="fab_button_hide_distance">100dp</dimen>
+    <dimen name="Width.Label">90dp</dimen>
+    <dimen name="Width.Dialog">280dp</dimen>
 
+    <!-- Margins -->
+    <dimen name="Margin.Half">8dp</dimen>
+    <dimen name="Margin.Standard">16dp</dimen>
+    <dimen name="Margin.Double">32dp</dimen>
+    <dimen name="Margin.FABPadding">96dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <!-- Text Size -->
+    <dimen name="Text.Small">12sp</dimen>
+    <dimen name="Text.Standard">14sp</dimen>
+    <dimen name="Text.Large">16sp</dimen>
+    <dimen name="Text.VeryLarge">18sp</dimen>
+    <dimen name="Text.EmptyState">20sp</dimen>
+
+    <!-- Dividers -->
+    <dimen name="Divider.Width">1dp</dimen>
 </resources>

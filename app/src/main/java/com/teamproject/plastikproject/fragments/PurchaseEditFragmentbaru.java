@@ -1,6 +1,7 @@
 package com.teamproject.plastikproject.fragments;
 
 import android.animation.ObjectAnimator;
+import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -12,7 +13,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -26,7 +31,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -69,10 +76,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.teamproject.plastikproject.fragments.PurchaseManageFragmentoribaru.TAGPUR;
+
 /**
  * Created by rage on 08.02.15. Create by task: 004
  */
-public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class PurchaseEditFragmentbaru extends DialogFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG = PurchaseEditFragmentbaru.class.getSimpleName();
     private static final String ARG_LIST_ID = "PurchaseList_param";
     private static final String STATE_LIST = "PurchaseListState";
@@ -92,9 +101,10 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
     private ListView purchaseListView;
     private View header, progressBar, addItemButton, toolbarBottom, createButton, clearTimeButton, moreButton, createView, hidePanel;
     private Button doneButton;
-    private EditText listNameEdit;
+    private Spinner listNameEdit;
     private EditText goodsLabelEdit;
-    private Spinner shopsSpinner, placeSpinner;
+    private Spinner  placeSpinner;
+    Button shopsSpinner;
     private TextView timeText, dateText;
     private SettingsSpinnerAdapterbar shopSpinnerAdapter, placeSpinnerAdapter;
     private List<PlacesModel> shopsList, placesList;
@@ -109,7 +119,9 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
     Responseupdateskdle dataskdle ;
     private int hasil;
     private SessionManager sesi;
+    String strhari;
 
+    String [] hari ={"sunday","monday","tuesday","wednesday","thursday","friday","saturday"};
     public static PurchaseEditFragmentbaru newInstance(long purchaseListId) {
         PurchaseEditFragmentbaru fragment = new PurchaseEditFragmentbaru();
         Bundle args = new Bundle();
@@ -117,6 +129,14 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
         fragment.setArguments(args);
         return fragment;
     }
+
+
+    public interface Ongetdatalagi{
+        void getdatalagi();
+    }
+    public Ongetdatalagi getdatalagibaru;
+
+
 
     public PurchaseEditFragmentbaru() {
 
@@ -131,6 +151,7 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
 
     }
 
+
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
@@ -142,7 +163,7 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_purchase_edit, container, false);
-
+        getDialog().setTitle("Set Alarm");
         //setListenerToRootView();
 
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
@@ -155,8 +176,21 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
         goodsLabelEdit = (EditText) header.findViewById(R.id.edit_goods_label);
         addItemButton = header.findViewById(R.id.button_goods_add);
 
-        listNameEdit = (EditText) view.findViewById(R.id.edit_list_name);
+        listNameEdit = (Spinner) view.findViewById(R.id.edit_list_name);
+        ArrayAdapter adapter = new ArrayAdapter(getActivity(),android.R.layout.simple_spinner_item,hari);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        listNameEdit.setAdapter(adapter);
+        listNameEdit.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                strhari =hari[position];
+            }
 
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         progressBar = view.findViewById(R.id.progress_bar);
 
         toolbarBottom = view.findViewById(R.id.toolbar_bottom);
@@ -166,11 +200,137 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
         createButton = view.findViewById(R.id.create_list_button);
         hidePanel = view.findViewById(R.id.hide_panel);
         clearTimeButton = view.findViewById(R.id.clear_time_button);
-        shopsSpinner = (Spinner) view.findViewById(R.id.shops_spinner);
+        shopsSpinner = (Button) view.findViewById(R.id.shops_spinner);
         placeSpinner = (Spinner) view.findViewById(R.id.place_spinner);
         timeText = (TextView) view.findViewById(R.id.time_time);
         dateText = (TextView) view.findViewById(R.id.time_date);
+        shopsSpinner.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+
+                if (getActivity() != null && isAdded()) {
+                    getLoaderManager().hasRunningLoaders();
+                    getLoaderManager().destroyLoader(LOADER_LIST);
+                    getLoaderManager().destroyLoader(LOADER_PLACE_ID);
+                    getLoaderManager().destroyLoader(LOADER_SHOP_ID);
+                    getLoaderManager().destroyLoader(LOADER_ITEM_ID);
+                }
+                int da = Integer.parseInt(String.valueOf(sesi.getIdincre()));
+                if (getActivity() != null) {
+                    Log.d("dataaaa",purchaseList.getDay());
+                    getActivity().startService(new Intent(getContext(), WritePurchaseListService.class)
+                            .putExtra(WritePurchaseListService.LIST_EXTRA, purchaseList)
+                    );
+                }
+                if (getActivity() != null) {
+                    if (da != 0) {
+                        if (!TextUtils.equals(strhari, purchaseList.getDay())) {
+                            if ( isTimeSelect) {
+                                Calendar c = Calendar.getInstance();
+                                c.set(mHour, mMinute, 0);
+                                purchaseList.setTime(c.getTimeInMillis());
+
+                            }
+
+                            //  updateList();
+                        }
+                        long data =purchaseList.getTime();
+                        //creating Date from millisecond
+                        Date currentDate = new Date(data);
+
+                        //printing value of Date
+
+                        System.out.println("current Date: " + currentDate);
+
+
+                        DateFormat df = new SimpleDateFormat("HH:mm");
+
+                        //formatted value of current Date
+                        System.out.println("Milliseconds to Date: " + df.format(currentDate));
+
+                        //Converting milliseconds to Date using Calendar
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTimeInMillis(data);
+                        System.out.println("Milliseconds to Date using Calendar:"
+                                + df.format(cal.getTime()));
+
+                        Timestamp sq = new Timestamp(cal.getTime().getTime());
+                        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                        Log.d("currentdatetimestampe",sdf.format(sq)); //this will print wit
+                        desc =strhari;
+                        waktu = sdf.format(sq);
+                        String sttus ="true";
+                        RestApi api = MyRetrofitClient.getInstaceRetrofit();
+                        showToast("proses");
+                        String daaaa=String.valueOf(da);
+                        //  final SessionManager sesi =new SessionManager(getContext());
+                        String iduser =sesi.getIdUser();
+                        String hari =strhari;
+//                        String da
+                      //  sesi.setidincre(String.valueOf(da));
+                        Call<ModelUpdateSkedule> modelCall = api.updatedata(waktu,iduser,hari,"true", String.valueOf(da));
+                        modelCall.enqueue(new Callback<ModelUpdateSkedule>() {
+                            @Override
+                            public void onResponse(Call<ModelUpdateSkedule> call, Response<ModelUpdateSkedule> response) {
+                                showToast("berhasil update");
+                            //   getdatabaru = new PlacesManageFragmentOri().getdatalokasi();
+                                dataskdle = new Responseupdateskdle();
+                                dataskdle = response.body().getResponse();
+                                sesi.setTime(timeText.getText().toString());
+                                // Get java object list json format string.
+//                        Intent moveWithObjectIntent = new Intent(getContext(), AlarmBroadcastReceiverUbah.class);
+//                        moveWithObjectIntent.putExtra(AlarmBroadcastReceiverUbah.EXTRA_PERSON, (Parcelable) dataskdle);
+//                        startActivity(moveWithObjectIntent);
+                               // AlarmUtils alarmUtils = new AlarmUtils(getContext());
+                           //     getActivity().getSupportFragmentManager().popBackStack();
+
+//                                PurchaseManageFragmentoribaru  fragmentoribaru = (PurchaseManageFragmentoribaru) getActivity().getSupportFragmentManager().findFragmentByTag("PurchaseManageFragmentoribaru");
+//                                fragmentoribaru.getdata();
+                                getdatalagibaru.getdatalagi();
+                            }
+
+                            @Override
+                            public void onFailure(Call<ModelUpdateSkedule> call, Throwable t) {
+                                showToast("gagal update");
+
+                            }
+                        });
+
+                    } else {
+                        if (!TextUtils.isEmpty(strhari)) {
+                            // addNewList();
+                            Toast.makeText(getContext(), "addnewlist", Toast.LENGTH_SHORT).show();
+
+                            desc =strhari;
+                            purchaseList.setDay(desc);
+                            if ( isTimeSelect) {
+                                Calendar c = Calendar.getInstance();
+                                c.set( mHour, mMinute, 0);
+                                purchaseList.setTime(c.getTimeInMillis());
+
+                            }
+
+                            if (getActivity() != null) {
+
+
+
+                            }
+                        } else {
+                            Toast.makeText(getContext(), R.string.purchase_edit_save_empty_message, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "aggg", Toast.LENGTH_SHORT).show();
+
+                        }
+                    }
+                    //         hideSoftKeyboard();
+
+                }
+
+
+
+                getDialog().dismiss();
+            }
+        });
         toolbarBottom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -300,29 +460,8 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (purchaseList.getIdUser() == 0
-                        && TextUtils.isEmpty(listNameEdit.getText().toString())) {
-
-                    /*Toast.makeText(
-                            getActivity(),
-                            R.string.purchase_edit_create_empty_toast,
-                            Toast.LENGTH_LONG
-                    ).show();*/
-
-                    new AlertDialog.Builder(getContext())
-                            .setTitle(getString(R.string.purchase_edit_create_empty_title))
-                            .setMessage(getString(R.string.purchase_edit_create_empty_message))
-                            .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    //nothing
-                                }
-                            })
-                            .show();
-                } else {
-                    if (TextUtils.isEmpty(listNameEdit.getText())) {
-                        listNameEdit.setText(R.string.purchase_edit_new_list_default);
-                    }
-                    purchaseList.setDay(listNameEdit.getText().toString());
+                adddata();
+                    purchaseList.setDay(strhari);
                     final String name = goodsLabelEdit.getText().toString();
                     final Handler handler = new Handler();
                     new Thread(new Runnable() {
@@ -371,76 +510,18 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
                     hidePanel.setVisibility(View.VISIBLE);
 
                     isNewList = false;
-                }
+
             }
         });
 
         addItemButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PurchaseListModelbar data1 =purchaseList;
-                //   PurchaseListModelbar model = new PurchaseListModelbar();
-                long data =data1.getTime();
-                //creating Date from millisecond
-                Date currentDate = new Date(data);
-
-                //printing value of Date
-
-                System.out.println("current Date: " + currentDate);
-
-                DateFormat df = new SimpleDateFormat("dd:MM:yy:HH:mm:ss");
-
-                //formatted value of current Date
-                System.out.println("Milliseconds to Date: " + df.format(currentDate));
-
-                //Converting milliseconds to Date using Calendar
-                Calendar cal = Calendar.getInstance();
-                cal.setTimeInMillis(data);
-                System.out.println("Milliseconds to Date using Calendar:"
-                        + df.format(cal.getTime()));
-
-                Log.d("currentdate:", String.valueOf(currentDate));
-                Log.d("currentdateMillise", df.format(currentDate));
-                Log.d("currentdateMilclnd",df.format(cal.getTime()));
-                Timestamp sq = new Timestamp(cal.getTime().getTime());
-                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-                Log.d("currentdatetimestampe",sdf.format(sq)); //this will print wit
-                desc =listNameEdit.getText().toString();
-                RestApi api = MyRetrofitClient.getInstaceRetrofit();
-                String id = "5b48b8a16fed35468804aad2";
-                String waktu =sdf.format(sq);
-                String sttus ="true";
-                Call<PurchaseListModelbar> modelCall =api.insertskedule(
-                        id,desc,waktu,sttus
-                );
-                modelCall.enqueue(new Callback<PurchaseListModelbar>() {
-                    @Override
-                    public void onResponse(Call<PurchaseListModelbar> call, Response<PurchaseListModelbar> response) {
-                        if (response.isSuccessful()){
-                            showToast("berhasil");
-                            long id =response.body().getIdUser();
-                            SessionManager manager = new SessionManager(getContext());
-                            String hari =listNameEdit.getText().toString();
-                           // String time = String.valueOf(response.body().getTime());
-                         //   String mili = String.valueOf(response.body().getTimeAlarm());
-                            manager.setDay(hari);
-                          //  manager.setTime(time);
-                           // manager.setMili(mili);
-                            addItem(id);
-                        }else{
-                            showToast("gagal");
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<PurchaseListModelbar> call, Throwable t) {
-                        showToast("check your connection and try again "+t.getMessage());
-                    }
-                });
 
 
             }
         });
+        //adddata();
 
 //        goodsLabelEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 //            @Override
@@ -506,7 +587,6 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
                     dateText.setText(R.string.purchase_edit_bottom_set_date);
                     timeText.setText(R.string.purchase_edit_bottom_set_time);
 
-                    updateList();
 
                     clearTimeButton.setVisibility(View.GONE);
                 }
@@ -532,11 +612,12 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
                         .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 purchaseList.setIsDone(!purchaseList.isDone());
-                                updateList();
                                 setEnableInterface(!purchaseList.isDone());
-                                if (purchaseList.isDone()) {
-                                    onBackPressed();
-                                }
+//                                if (purchaseList.isDone()) {
+//                                    Bundle bundle =new Bundle();
+//                                    onCreateDialog(bundle);
+//                                      }
+                                getDialog().dismiss();
                             }
                         })
                         .setNegativeButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
@@ -547,6 +628,64 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
                         .show();
             }
         });
+    }
+
+    private void adddata() {
+
+
+        PurchaseListModelbar data1 =purchaseList;
+        //   PurchaseListModelbar model = new PurchaseListModelbar();
+        long data =data1.getTime();
+        //creating Date from millisecond
+        Date currentDate = new Date(data);
+
+        //printing value of Date
+
+        System.out.println("current Date: " + currentDate);
+
+        DateFormat df = new SimpleDateFormat("dd:MM:yy:HH:mm:ss");
+
+        //formatted value of current Date
+
+        //Converting milliseconds to Date using Calendar
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(data);
+        Timestamp sq = new Timestamp(cal.getTime().getTime());
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        Log.d("currentdatetimestampe",sdf.format(sq)); //this will print wit
+        desc =strhari;
+        RestApi api = MyRetrofitClient.getInstaceRetrofit();
+        String id = "5b48b8a16fed35468804aad2";
+        String waktu =sdf.format(sq);
+        String sttus ="true";
+//        Call<PurchaseListModelbar> modelCall =api.insertskedule(
+//                sesi.getIdUser(),desc,waktu,sttus
+//        );
+//        modelCall.enqueue(new Callback<PurchaseListModelbar>() {
+//            @Override
+//            public void onResponse(Call<PurchaseListModelbar> call, Response<PurchaseListModelbar> response) {
+//                if (response.isSuccessful()){
+//                    showToast("berhasil");
+//                    long idincrement =response.body().getIdUser();
+//                     sesi = new SessionManager(getContext());
+//                    String hari =strhari;
+//                     String time = String.valueOf(response.body().getTime());
+//                    //   String mili = String.valueOf(response.body().getTimeAlarm());
+//                    sesi.setDay(hari);
+//                      sesi.setTime(time);
+//                    // manager.setMili(mili);
+//                    sesi.setidincre(String.valueOf(response.body().getIdUser()));
+//                    addItem(idincrement);
+//                }else{
+//                    showToast("gagal");
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<PurchaseListModelbar> call, Throwable t) {
+//                showToast("check your connection and try again "+t.getMessage());
+//            }
+//        });
     }
 
     private void setEnableInterface(boolean enable){
@@ -676,61 +815,8 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
                 startActivityForResult(intent, REQUEST_SHOP);
             }
         });
-        shopsSpinner.setAdapter(shopSpinnerAdapter);
-        if (purchaseList.getShopId() != 0) {
-            for (PlacesModel shop : shopsList) {
-                if (!purchaseList.isUserShop()) {
-                    if (shop.getServerId() == purchaseList.getShopId()) {
-                        shopsSpinner.setSelection(shopSpinnerAdapter.getPosition(shop));
-                    }
-                } else {
-                    if (shop.getDbId() == purchaseList.getShopId()) {
-                        shopsSpinner.setSelection(shopSpinnerAdapter.getPosition(shop));
-                    }
-                }
-            }
-        }
-        shopsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                boolean needUpdate = false;
-                if (position != 0) {
-                    if (shopSpinnerAdapter.getItem(position).getServerId() == 0
-                            && (purchaseList.getShopId() != shopSpinnerAdapter.getItem(position).getDbId()
-                            || !purchaseList.isUserShop())) {
-                        purchaseList.setShopId(shopSpinnerAdapter.getItem(position).getDbId());
-                        purchaseList.setIsUserShop(true);
-                        needUpdate = true;
-                    } else if (shopSpinnerAdapter.getItem(position).getServerId() != 0
-                            && (purchaseList.getShopId() != shopSpinnerAdapter.getItem(position).getServerId()
-                            || purchaseList.isUserShop())) {
-                        purchaseList.setShopId(shopSpinnerAdapter.getItem(position).getServerId());
-                        purchaseList.setIsUserShop(false);
-                        needUpdate = true;
-                    }
-                } else if (purchaseList.getShopId() != 0) {
-                    purchaseList.setShopId(0);
-                    needUpdate = true;
-                }
-                if (needUpdate &&purchaseList.getIdUser() != 0) {
-                    purchaseList.setMaxDistance(0);
-                    purchaseList.setIsAlarm(false);
-                    /*new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ContentHelper.updatePurchaseList(getActivity(), purchaseList);
-                        }
-                    }).start();*/
-                    updateList();
-                }
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                //
-            }
-        });
     }
 
     private void initPlaceSpinner() {
@@ -796,7 +882,6 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
                             ContentHelper.updatePurchaseList(getActivity(), purchaseList);
                         }
                     }).start();*/
-                    updateList();
                 }
             }
 
@@ -884,7 +969,6 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
 //dsds
             //dsdsds
             if (purchaseList.getIdUser() > 0) {
-                updateList();
                 AlarmUtils alarmUtils = new AlarmUtils(getContext());
                 SessionManager manager = new SessionManager(getContext());
                 String day = manager.getDay();
@@ -1005,6 +1089,11 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
         goodsLabelEdit.requestFocus();
         shopsSpinner.setEnabled(true);
         placeSpinner.setEnabled(true);
+        ViewGroup.LayoutParams params = getDialog().getWindow().getAttributes();
+        params.width = WindowManager.LayoutParams.MATCH_PARENT;
+        params.height = 600;
+        getDialog().getWindow().setAttributes((android.view.WindowManager.LayoutParams) params);
+
     }
 
     /*
@@ -1042,7 +1131,7 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
             outState.putLong(STATE_ID, purchaseList.getIdUser());
         }
         outState.putString(STATE_GOODS, goodsLabelEdit.getText().toString());
-        outState.putString(STATE_TITLE, listNameEdit.getText().toString());
+        outState.putString(STATE_TITLE,strhari);
         outState.putBoolean(STATE_NEW_LIST, isNewList);
     }
 
@@ -1062,6 +1151,7 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
         inflater.inflate(R.menu.menu_purchase_edit, menu);
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -1071,7 +1161,7 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_delete_list) {
-            hideSoftKeyboard();
+     //       hideSoftKeyboard();
             deleteList();
             return true;
         }
@@ -1079,149 +1169,44 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public boolean onBackPressed() {
-        if (getActivity() != null && isAdded()) {
-            getLoaderManager().hasRunningLoaders();
-            getLoaderManager().destroyLoader(LOADER_LIST);
-            getLoaderManager().destroyLoader(LOADER_PLACE_ID);
-            getLoaderManager().destroyLoader(LOADER_SHOP_ID);
-            getLoaderManager().destroyLoader(LOADER_ITEM_ID);
-        }
-        int da = Integer.parseInt(String.valueOf(purchaseList.getIdUser()));
-        if (getActivity() != null) {
-            getActivity().startService(new Intent(getContext(), WritePurchaseListService.class)
-                            .putExtra(WritePurchaseListService.LIST_EXTRA, purchaseList)
-            );
-        }
-        if (getActivity() != null) {
-            if (da != 0) {
-                if (!TextUtils.equals(listNameEdit.getText().toString(), purchaseList.getDay())) {
-                    if ( isTimeSelect) {
-                        Calendar c = Calendar.getInstance();
-                        c.set(mHour, mMinute, 0);
-                        purchaseList.setTime(c.getTimeInMillis());
 
-                    }
-
-                  //  updateList();
-                }
-                long data =purchaseList.getTime();
-                //creating Date from millisecond
-                Date currentDate = new Date(data);
-
-                //printing value of Date
-
-                System.out.println("current Date: " + currentDate);
-
-
-                DateFormat df = new SimpleDateFormat("HH:mm");
-
-                //formatted value of current Date
-                System.out.println("Milliseconds to Date: " + df.format(currentDate));
-
-                //Converting milliseconds to Date using Calendar
-                Calendar cal = Calendar.getInstance();
-                cal.setTimeInMillis(data);
-                System.out.println("Milliseconds to Date using Calendar:"
-                        + df.format(cal.getTime()));
-
-                Timestamp sq = new Timestamp(cal.getTime().getTime());
-                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-                Log.d("currentdatetimestampe",sdf.format(sq)); //this will print wit
-                desc =listNameEdit.getText().toString();
-                waktu = sdf.format(sq);
-                String sttus ="true";
-                RestApi api = MyRetrofitClient.getInstaceRetrofit();
-            showToast("proses");
-            String daaaa=String.valueOf(da);
-              //  final SessionManager sesi =new SessionManager(getContext());
-            String iduser =sesi.getIdUser();
-            String hari =listNameEdit.getText().toString();
-            sesi.setidincre(String.valueOf(da));
-                Call<ModelUpdateSkedule> modelCall = api.updatedata(waktu,iduser,hari,"true", String.valueOf(da));
-                modelCall.enqueue(new Callback<ModelUpdateSkedule>() {
-                    @Override
-                    public void onResponse(Call<ModelUpdateSkedule> call, Response<ModelUpdateSkedule> response) {
-            showToast("berhasil update");
-            dataskdle = new Responseupdateskdle();
-                        dataskdle = response.body().getResponse();
-                       sesi.setTime(timeText.getText().toString());
-                        // Get java object list json format string.
-//                        Intent moveWithObjectIntent = new Intent(getContext(), AlarmBroadcastReceiverUbah.class);
-//                        moveWithObjectIntent.putExtra(AlarmBroadcastReceiverUbah.EXTRA_PERSON, (Parcelable) dataskdle);
-//                        startActivity(moveWithObjectIntent);
-                        AlarmUtils alarmUtils = new AlarmUtils(getContext());
-    }
-
-                    @Override
-                    public void onFailure(Call<ModelUpdateSkedule> call, Throwable t) {
-                        showToast("gagal update");
-
-                    }
-                });
-
-            } else {
-                if (!TextUtils.isEmpty(listNameEdit.getText().toString())) {
-                   // addNewList();
-                    Toast.makeText(getContext(), "addnewlist", Toast.LENGTH_SHORT).show();
-                    if (TextUtils.isEmpty(listNameEdit.getText())) {
-            listNameEdit.setText(R.string.purchase_edit_new_list_default);
-
-                    }
-                    desc = listNameEdit.getText().toString();
-        purchaseList.setDay(desc);
-        if ( isTimeSelect) {
-            Calendar c = Calendar.getInstance();
-            c.set( mHour, mMinute, 0);
-            purchaseList.setTime(c.getTimeInMillis());
-
-        }
-
-        if (getActivity() != null) {
-
-
-
-        }
-                } else {
-                    Toast.makeText(getContext(), R.string.purchase_edit_save_empty_message, Toast.LENGTH_SHORT).show();
-                    Toast.makeText(getContext(), "aggg", Toast.LENGTH_SHORT).show();
-
-                }
-            }
-            hideSoftKeyboard();
-            getActivity().getSupportFragmentManager().popBackStack();
-        }
-
-
-
-
-///   long millis = data % 1000;
-////        long second = (data / 1000) % 60;
-////        long minute = (data / (1000 * 60)) % 60;
-////        long hour = (data / (1000 * 60 * 60)) % 24;
-//       // HeroHelper.
-//     //  String sd=HeroHelper.timeConversion2(data1.getTime());
-//        // String time = String.format("%02d:%02d:%02d.%d", hour, minute, second, millis);
-//       // Toast.makeText(getActivity(), "jam:"+time, Toast.LENGTH_LONG).show();
-//       // SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmm");
-//        try {
-//            String dddd=HeroHelper.jamSekarang3(data1.getTime());
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-        //    Date ins = df.parse(data1.getTime());
-      //  long ts = ins.getTime();
-//String ds=HeroHelper.getDurationBreakdown(data1.getTime());
-  //      Toast.makeText(getContext(), "ss"+ds, Toast.LENGTH_SHORT).show();
-
-        return false;
-    }
+//    @NonNull
+//    @Override
+//    public Dialog onCreateDialog(Bundle savedInstanceState) {
+//        Toast.makeText(mContext, "hai", Toast.LENGTH_SHORT).show();
+//        return new Dialog(getActivity(),getTheme()){
+//            @Override
+//            public void onBackPressed() {
+//
+/////   long millis = data % 1000;
+//////        long second = (data / 1000) % 60;
+//////        long minute = (data / (1000 * 60)) % 60;
+//////        long hour = (data / (1000 * 60 * 60)) % 24;
+////       // HeroHelper.
+////     //  String sd=HeroHelper.timeConversion2(data1.getTime());
+////        // String time = String.format("%02d:%02d:%02d.%d", hour, minute, second, millis);
+////       // Toast.makeText(getActivity(), "jam:"+time, Toast.LENGTH_LONG).show();
+////       // SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmm");
+////        try {
+////            String dddd=HeroHelper.jamSekarang3(data1.getTime());
+////        } catch (ParseException e) {
+////            e.printStackTrace();
+////        }
+//                //    Date ins = df.parse(data1.getTime());
+//                //  long ts = ins.getTime();
+////String ds=HeroHelper.getDurationBreakdown(data1.getTime());
+//                //      Toast.makeText(getContext(), "ss"+ds, Toast.LENGTH_SHORT).show();
+//
+//            PurchaseEditFragmentbaru.this.dismiss();
+//            }
+//        };
+//    }
+//
 
     private void addItem(final long id) {
         if (!TextUtils.isEmpty(goodsLabelEdit.getText().toString())) {
             progressBar.setVisibility(View.VISIBLE);
-            if (TextUtils.isEmpty(purchaseList.getDay()) && TextUtils.isEmpty(listNameEdit.getText())) {
+            if (TextUtils.isEmpty(purchaseList.getDay())) {
                 purchaseList.setDay(getString(R.string.purchase_edit_new_list_default));
             }
             final String name = goodsLabelEdit.getText().toString();
@@ -1268,17 +1253,6 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
             Toast.makeText(mContext, msg, Toast.LENGTH_LONG).show();
     }
 
-    private void updateList() {
-        if (TextUtils.isEmpty(listNameEdit.getText())) {
-            listNameEdit.setText(R.string.purchase_edit_new_list_default);
-        }
-        purchaseList.setDay(listNameEdit.getText().toString());
-//        if (getActivity() != null) {
-//            getActivity().startService(new Intent(getContext(), WritePurchaseListService.class)
-//                            .putExtra(WritePurchaseListService.LIST_EXTRA, purchaseList)
-//            );
-//        }
-    }
 
     private void deleteList() {
         boolean isNeedDelete = false;
@@ -1286,12 +1260,12 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
             isNeedDelete = true;
         } else {
             if (purchaseList.getPurchasesItems().size() > 0
-                    || !TextUtils.isEmpty(listNameEdit.getText().toString())) {
+                   ) {
                 isNeedDelete = true;
             }
         }
         if (isNeedDelete) {
-            String listName = listNameEdit.getText().toString();
+            String listName = strhari;
             String message;
             if (TextUtils.isEmpty(listName)) {
                 message = String.format(
@@ -1333,48 +1307,6 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
         }
     }
 
-    private void addNewList() {
-//        if (TextUtils.isEmpty(listNameEdit.getText())) {
-//            listNameEdit.setText(R.string.purchase_edit_new_list_default);
-//        }
-//        String desc =listNameEdit.getText().toString();
-//        purchaseList.setDay(desc);
-//        if (isDateSelect && isTimeSelect) {
-//            Calendar c = Calendar.getInstance();
-//            c.set(mYear, mMonth, mDay, mHour, mMinute, 0);
-//            purchaseList.setTime(c.getTimeInMillis());
-//            Log.d("jam",String.valueOf(c.getTimeInMillis()));
-//            Toast.makeText(getContext(), String.valueOf(c.getTimeInMillis()), Toast.LENGTH_SHORT).show();
-//        }
-//        RestApi api = MyRetrofitClient.getInstaceRetrofit();
-//        String id = "5b4611df0c7d4525caabb017";
-//        Call<PurchaseListModelbar> modelCall =api.insertskedule(
-//        id,desc,String.valueOf(purchaseList.getTime()),"true"
-//        );
-//        modelCall.enqueue(new Callback<PurchaseListModelbar>() {
-//            @Override
-//            public void onResponse(Call<PurchaseListModelbar> call, Response<PurchaseListModelbar> response) {
-//                if (response.isSuccessful()){
-//                    Toast.makeText(getContext(), "sukses", Toast.LENGTH_SHORT).show();
-//                }else{
-//                    Toast.makeText(getContext(), "galgal maap", Toast.LENGTH_SHORT).show();
-//
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<PurchaseListModelbar> call, Throwable t) {
-//                Toast.makeText(getContext(), "gagal", Toast.LENGTH_SHORT).show();
-//
-//            }
-//        });
-//
-//        if (getActivity() != null) {
-//            getActivity().startService(new Intent(getContext(), WritePurchaseListService.class)
-//                            .putExtra(WritePurchaseListService.LIST_EXTRA, purchaseList)
-//            );
-//        }
-    }
 
     private void changeBought(final long dbId, final boolean checked) {
         new Thread(new Runnable() {
@@ -1423,21 +1355,6 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
             initPlaceSpinner();
         } else {
             placeSpinnerAdapter.notifyDataSetChanged();
-        }
-    }
-
-    private void refreshPurchaseList(Cursor cursor) {
-        if (!cursor.isClosed()) {
-            purchaseList = ContentHelper.getPurchaseList(cursor);
-            if (!TextUtils.isEmpty(titleState)) {
-                listNameEdit.setText(titleState);
-                titleState = null;
-            } else {
-                listNameEdit.setText(purchaseList.getDay());
-            }
-            initScreen();
-        } else {
-            onBackPressed();
         }
     }
 
@@ -1573,7 +1490,7 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
                 refreshPlacesList(data);
                 break;
             case LOADER_LIST:
-                refreshPurchaseList(data);
+             //   refreshPurchaseList(data);
                 break;
         }
         //adapter.swapCursor(data);
@@ -1590,6 +1507,16 @@ public class PurchaseEditFragmentbaru extends BaseFragment implements LoaderMana
         BaseActivity activity = (BaseActivity) getActivity();
         if (activity != null) {
             activity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_check_white_24dp);
+        }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try{
+            getdatalagibaru =(Ongetdatalagi)getTargetFragment();
+        }catch (ClassCastException e){
+
         }
     }
 }

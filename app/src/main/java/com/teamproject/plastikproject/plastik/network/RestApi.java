@@ -1,7 +1,10 @@
 package com.teamproject.plastikproject.plastik.network;
 
 
+import com.teamproject.plastikproject.alarmapp.models.ModelAddTropy;
+import com.teamproject.plastikproject.alarmapp.models.modeldataschedule.ModelDataSchedule;
 import com.teamproject.plastikproject.model.PurchaseListModelbar;
+import com.teamproject.plastikproject.model.User;
 import com.teamproject.plastikproject.modeladdlokasi.ResponseAddLokasi;
 import com.teamproject.plastikproject.modeldatalokasi.ResponseDataLokasi;
 import com.teamproject.plastikproject.modeldatalokasi.ResponseDelete;
@@ -16,6 +19,8 @@ import com.teamproject.plastikproject.plastik.model.ModelUser;
 import com.teamproject.plastikproject.plastik.model.ResponseChangeUsername;
 import com.teamproject.plastikproject.plastik.model.ResponseDataUser;
 import com.teamproject.plastikproject.plastik.model.ServerResponse;
+import com.teamproject.plastikproject.plastik.modelloginfb.Responsefb;
+import com.teamproject.plastikproject.plastik.notif.modeladdlokasi.ModelAddlokasi;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -46,8 +51,14 @@ public interface RestApi {
     );
 
     @FormUrlEncoded
+    @POST("addthropy")
+    Call<ModelAddTropy> addtropy(
+            @Field("id_user")String iduser
+    );
+
+    @FormUrlEncoded
     @POST("smart_schedules")
-    Call<PurchaseListModelbar> insertskedule(
+    Call<ModelAddlokasi> insertskedule(
             @Field("id_user") String id_user,
             @Field("day") String day,
             @Field("time") String time,
@@ -74,6 +85,14 @@ public interface RestApi {
             @Field("is_admin") String strisadmin,
             @Field("name") String strname
     );
+@FormUrlEncoded
+    @POST("UserManagements/Register")
+    Call<Responsefb> registerUserfacebook(
+            @Field("email") String stremail,
+            @Field("password") String strpassword,
+            @Field("is_admin") String strisadmin,
+            @Field("name") String strname
+    );
 
     @GET("UserManagements/GetUser")
     Call<ResponseDataUser> getdatauser(
@@ -81,6 +100,10 @@ public interface RestApi {
 
  @GET("smart_schedules/GetScheduleByUser")
     Call<ResponseDataSkeduleuser> getdataskeduleuser(
+            @Query("id_user") String strid);
+
+@GET("smart_schedules/GetScheduleByUser")
+    Call<ModelDataSchedule> getdataskeduleuser2(
             @Query("id_user") String strid);
 
 
@@ -128,9 +151,9 @@ public interface RestApi {
 
     @FormUrlEncoded
     @POST("smart_areas/InsertArea2DSphere")
-    Call<ResponseAddLokasi> addlokasi(
-            @Field("long") String strlong,
-            @Field("lat") String strlat,
+    Call<ModelAddlokasi> addlokasi(
+            @Field("long") double strlong,
+            @Field("lat") double strlat,
             @Field("description") String strdescription
     );
 

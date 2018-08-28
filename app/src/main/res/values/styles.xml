@@ -39,9 +39,9 @@
     <!-- Base application theme. -->
     <style name="ASlistBase" parent="Theme.AppCompat.Light.DarkActionBar">
 
-        <item name="colorPrimary">@color/theme_primary</item>
-        <item name="colorPrimaryDark">@color/theme_primary_dark</item>
-        <item name="colorAccent">@color/theme_accent</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorPrimary</item>
         <item name="android:fontFamily">@font/gayahuruf</item>
 
     </style>
@@ -86,7 +86,7 @@
         <item name="android:textSize">@dimen/toolbar_edit_description_text_size</item>
     </style>
 
-    <style name="ToolBarTitleEditText" parent="Widget.AppCompat.EditText" >
+    <style name="ToolBarTitleEditText" parent="@android:style/Widget.Holo.DropDownItem.Spinner" >
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textColorHint">@color/theme_toolbar_hint</item>
         <item name="android:textSize">@dimen/abc_text_size_title_material_toolbar</item>
@@ -94,4 +94,81 @@
 
     </style>
 
+    <style name="FloatingActionButton" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginRight">@dimen/fab_margin</item>
+        <item name="android:layout_marginBottom">@dimen/fab_margin</item>
+
+    </style>
+
+    <style name="TextView" parent="AppTheme">
+        <item name="android:textColor">@color/TextColor.DarkGray</item>
+        <item name="android:textSize">@dimen/Text.Standard</item>
+    </style>
+
+    <style name="Color1SwitchStyle">
+        <item name="colorControlActivated">@color/colorPrimaryDark</item>
+    </style>
+    <style name="TextView.Header" parent="TextView">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/Text.VeryLarge</item>
+    </style>
+
+    <style name="TextView.EmptyState" parent="TextView">
+        <item name="android:textColor">@color/TextColor.White</item>
+        <item name="android:textSize">@dimen/Text.EmptyState</item>
+        <item name="android:layout_margin">@dimen/Margin.Double</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="TextView.Small" parent="TextView">
+        <item name="android:textColor">@color/TextColor.Black</item>
+        <item name="android:textSize">@dimen/Text.Small</item>
+    </style>
+
+    <style name="EditText" parent="AppTheme">
+        <item name="android:textColor">@color/TextColor.Black</item>
+        <item name="android:textColorHint">@color/TextColor.Gray</item>
+        <item name="android:layout_marginRight">@dimen/Margin.Standard</item>
+        <item name="android:layout_marginLeft">@dimen/Margin.Standard</item>
+        <item name="android:layout_marginTop">@dimen/Margin.Half</item>
+        <item name="android:layout_marginBottom">@dimen/Margin.Half</item>
+        <item name="android:textSize">@dimen/Text.Standard</item>
+    </style>
+
+    <style name="DeleteButton" parent="AppTheme">
+        <item name="android:textColor">@color/TextColor.DarkGray</item>
+        <item name="android:textSize">@dimen/Text.Standard</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Divider.Horizontal" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/Divider.Width</item>
+        <item name="android:background">@color/Divider</item>
+    </style>
+
+    <style name="AlertDialogSettings" parent="AlertDialog.AppCompat">
+        <item name="colorPrimary">@color/colorGrey</item>
+        <item name="colorPrimaryDark">@color/colorBlack</item>
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:background">@color/colorCustom</item>
+        <item name="android:colorAccent">@color/colorRed_500</item>
+
+        <item name="android:fontFamily">@font/gayahuruf</item>
+    </style>
+
+    <style name="AlertDialogCustom" parent="Theme.AppCompat.Dialog">
+        <item name="android:textColor">@color/colorRed_500</item>
+        <item name="android:colorBackground">@color/colorCustom</item>
+        <item name="android:fontFamily">@font/gayahuruf</item>
+
+    </style>
+
+    <style name="TimePickerDialog" parent="Theme.AppCompat.DayNight.Dialog">
+    </style>
 </resources>

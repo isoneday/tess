@@ -12,11 +12,15 @@ import com.teamproject.plastikproject.helpers.AppConstants;
 import com.teamproject.plastikproject.model.PurchaseListModelbar;
 import com.teamproject.plastikproject.modelupdateskedule.Responseupdateskdle;
 
+import static com.teamproject.plastikproject.WritePurchaseListService.LIST_EXTRA;
+
 /**
  * Created by rage on 4/4/15.
  */
 public class AlarmUtils {
+    public static final String LIST_EXTRA1 = "datapu";
     private Context context;
+    private PurchaseListModelbar purchaseList;
 
     public AlarmUtils(Context context) {
         this.context = context;
@@ -26,6 +30,9 @@ public class AlarmUtils {
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
+//        purchaseList =new PurchaseListModelbar();
+//        list =purchaseList;
+//        intent.putExtra("ter", purchaseList);
         intent.putExtra(AppConstants.EXTRA_LIST_ID, list.getIdUser());
         Uri data = Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME));
         intent.setData(data);

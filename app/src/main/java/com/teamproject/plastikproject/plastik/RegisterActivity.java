@@ -18,6 +18,7 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
@@ -37,7 +38,9 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.teamproject.plastikproject.R;
 import com.teamproject.plastikproject.plastik.activity.HalamanBaggingActivity;
 import com.teamproject.plastikproject.plastik.helper.MyFuction;
+import com.teamproject.plastikproject.plastik.helper.SessionManager;
 import com.teamproject.plastikproject.plastik.model.ModelRegister;
+import com.teamproject.plastikproject.plastik.modelloginfb.Responsefb;
 import com.teamproject.plastikproject.plastik.network.MyRetrofitClient;
 import com.teamproject.plastikproject.plastik.network.RestApi;
 
@@ -84,10 +87,14 @@ public class RegisterActivity extends MyFuction implements GoogleApiClient.OnCon
     private TextView mStatusTextView;
     private TextView mDetailTextView;
     private CallbackManager mCallbackManager;
+    private CallbackManager callbackManager;
+    private SessionManager session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         // [START config_signin]
@@ -113,10 +120,13 @@ public class RegisterActivity extends MyFuction implements GoogleApiClient.OnCon
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
+
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                 } else {
                     // User is signed out
+                  //  Toast.makeText(RegisterActivity.this, "gagal simpan data user", Toast.LENGTH_SHORT).show();
+
                     Log.d(TAG, "onAuthStateChanged:signed_out");
                 }
                 // [START_EXCLUDE]
@@ -134,26 +144,49 @@ public class RegisterActivity extends MyFuction implements GoogleApiClient.OnCon
         mCallbackManager = CallbackManager.Factory.create();
         LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions("email", "public_profile");
-        loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                Log.d(TAG, "facebook:onSuccess:" + loginResult);
-                handleFacebookAccessToken(loginResult.getAccessToken());
-            }
 
-            @Override
-            public void onCancel() {
-                Log.d(TAG, "facebook:onCancel");
-                // ...
-            }
+//        loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+//            @Override
+//            public void onSuccess(LoginResult loginResult) {
+//                Log.d(TAG, "facebook:onSuccess:" + loginResult);
+//                handleFacebookAccessToken(loginResult.getAccessToken());
+//                String username =loginResult.getAccessToken().getUserId();
+//            }
+//
+//            @Override
+//            public void onCancel() {
+//                Log.d(TAG, "facebook:onCancel");
+//                // ...
+//            }
+//
+//            @Override
+//            public void onError(FacebookException error) {
+//                Log.d(TAG, "facebook:onError", error);
+//                // ...
+//            }
+//        });
+        callbackManager = CallbackManager.Factory.create();
+       // 375
+        LoginManager.getInstance().registerCallback(callbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        // App code
+                    handleFacebookAccessToken(loginResult.getAccessToken());
+                    String username =loginResult.getAccessToken().getUserId();
+//
+                    }
 
-            @Override
-            public void onError(FacebookException error) {
-                Log.d(TAG, "facebook:onError", error);
-                // ...
-            }
-        });
+                    @Override
+                    public void onCancel() {
+                        // App code
+                    }
 
+                    @Override
+                    public void onError(FacebookException exception) {
+                        // App code
+                    }
+                });
     }
 
     @Override
@@ -161,17 +194,24 @@ public class RegisterActivity extends MyFuction implements GoogleApiClient.OnCon
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
         FirebaseUser currentUser = mAuth.getCurrentUser();
-   //     updateUI(currentUser);
-        if (currentUser!=null) {
-            updateUI();
-        }
+        updateUI(currentUser);
+//        if (currentUser!=null) {
+//            updateUI();
+//        }
 
     }
-    private void updateUI() {
+    private void updateUI(FirebaseUser currentUser) {
+        if (currentUser!=null) {
+//            updateUI();
+//
         Toast.makeText(this, "you're logged in", Toast.LENGTH_SHORT).show();
         Intent i = new Intent(RegisterActivity.this,HalamanBaggingActivity.class);
         startActivity(i);
-        finish();
+        finish();}
+        else{
+            Toast.makeText(this, "you're not logged in", Toast.LENGTH_SHORT).show();
+
+        }
 
     }
 
@@ -188,13 +228,35 @@ public class RegisterActivity extends MyFuction implements GoogleApiClient.OnCon
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             //          startActivity(new Intent(MainActivity.this, HalamanBaggingActivity.class));
-                            updateUI();
+                            String name = user.getDisplayName();
+                            String email = user.getEmail();
+
+                            String uid = user.getUid();
+                            //Create user
+                            final Responsefb loggedIn = new Responsefb(uid, name, email);
+                            RestApi api = MyRetrofitClient.getInstaceRetrofit();
+                            Call<Responsefb> call = api.registerUserfacebook(email,uid,"0",name);
+                            call.enqueue(new Callback<Responsefb>() {
+                                @Override
+                                public void onResponse(Call<Responsefb> call, Response<Responsefb> response) {
+                                    if (response.isSuccessful()){
+                                        Toast.makeText(RegisterActivity.this, "login is successful", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<Responsefb> call, Throwable t) {
+                                    Toast.makeText(RegisterActivity.this, "login failed", Toast.LENGTH_SHORT).show();
+
+                                }
+                            });
+                            updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Toast.makeText(RegisterActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
-                            updateUI();
+                            updateUI(null);
                         }
 
                         // ...
@@ -239,7 +301,7 @@ public class RegisterActivity extends MyFuction implements GoogleApiClient.OnCon
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
         // [START_EXCLUDE silent]
-        showProgressDialog("informasi");
+        showProgressDialog("information");
         // [END_EXCLUDE]
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
@@ -292,7 +354,7 @@ public class RegisterActivity extends MyFuction implements GoogleApiClient.OnCon
                 strpassword =edtpassword.getText().toString();
                 strconpassword =edtpasswordconfirm.getText().toString();
                 if (TextUtils.isEmpty(strnama)){
-                    edtnama.setError("nama tidak boleh kosong");
+                    edtnama.setError(getString(R.string.nameempty));
                     edtnama.requestFocus();
                     myanimation(edtnama);
                 }
@@ -308,22 +370,22 @@ public class RegisterActivity extends MyFuction implements GoogleApiClient.OnCon
                 else if(TextUtils.isEmpty(strusername)){
                     edtemail.requestFocus();
                     myanimation(edtemail);
-                    edtemail.setError("username tidak boleh kosong");
+                    edtemail.setError(getString(R.string.emailempty));
                 }else if (TextUtils.isEmpty(strpassword)){
                     edtpassword.requestFocus();
                     myanimation(edtpassword);
-                    edtpassword.setError("password tidak boleh kosong");
+                    edtpassword.setError(getString(R.string.passwordempty));
                 }else if (strpassword.length()<6){
                     myanimation(edtpassword);
-                    edtpassword.setError("password minimal 6 karakter");
+                    edtpassword.setError(getString(R.string.minimumpassword));
                 }else if (TextUtils.isEmpty(strconpassword)){
                     edtpasswordconfirm.requestFocus();
                     myanimation(edtpasswordconfirm);
-                    edtpasswordconfirm.setError("password confirm tidak boleh kosong");
+                    edtpasswordconfirm.setError(getString(R.string.passwordconempty));
                 }else if (!strpassword.equals(strconpassword)){
                     edtpasswordconfirm.requestFocus();
                     myanimation(edtpasswordconfirm);
-                    edtpasswordconfirm.setError("password tidak sama");
+                    edtpasswordconfirm.setError(getString(R.string.passwordmissmatch));
                 }else{
                     registeruser();
                 }
@@ -333,7 +395,7 @@ public class RegisterActivity extends MyFuction implements GoogleApiClient.OnCon
     }
 
     private void registeruser() {
-            final ProgressDialog dialog =ProgressDialog.show(c,"process register user","harap bersabar");
+            final ProgressDialog dialog =ProgressDialog.show(c,"process register user","please be patient");
 
             RestApi api = MyRetrofitClient.getInstaceRetrofit();
             Call<ModelRegister> ModelUserCall =api.registerUser(strusername,strpassword,strlevel,strnama
@@ -345,20 +407,25 @@ public class RegisterActivity extends MyFuction implements GoogleApiClient.OnCon
                 dialog.dismiss();
                 if (response.isSuccessful()){
                     myIntent(LoginActivity.class);
+                    session = new SessionManager(RegisterActivity.this);
+                String email =response.body().getData().getEmail();
+                    session.setEmail(email);
                     finish();
+                    Toast.makeText(RegisterActivity.this, "thank you for registering with us", Toast.LENGTH_SHORT).show();
 
                 } else{
-                    myToast("gagal register");
+                    myToast("register failed");
                 }
         }
 
         @Override
         public void onFailure(Call<ModelRegister> call, Throwable t) {
             dialog.dismiss();
-            myToast("gagal koneksi :"+t.getMessage());
+            myToast(getString(R.string.checkyourconnection)+t.getMessage());
         }
     });
     }
+    //google login
     public void onGoogle(View view) {
         signIn();
     }

@@ -24,6 +24,13 @@
             android:background="@drawable/putih"
             android:orientation="vertical">
 
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginBottom="167dp" />
          <WebView
              android:layout_width="match_parent"
              android:id="@+id/webstatistic"

@@ -3,27 +3,32 @@ package com.teamproject.plastikproject.modeldatalokasi;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
+import com.google.android.gms.location.Geofence;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.teamproject.plastikproject.plastik.notif.NamedGeofence;
 
-public class Response implements Parcelable
+import java.util.UUID;
+
+public class Response implements Parcelable,Comparable
 {
 
     @SerializedName("_id")
     @Expose
-    private String id;
+    public String id;
 
     @SerializedName("description")
     @Expose
-    private String description;
+    public String description;
     @SerializedName("long")
     @Expose
     private Double _long;
     @SerializedName("lat")
     @Expose
     private Double lat;
-
+    private float radius;
     public final static Creator<Response> CREATOR = new Creator<Response>() {
         @SuppressWarnings({
             "unchecked"
@@ -117,4 +122,19 @@ public class Response implements Parcelable
         return  0;
     }
 
+    @Override
+    public int compareTo(@NonNull Object another) {
+        Response other = (Response) another;
+        return description.compareTo(other.description);
+    }
+
+    public Geofence geofence() {
+        id = UUID.randomUUID().toString();
+        return new Geofence.Builder()
+                .setRequestId(id)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+                .setCircularRegion(lat, _long, radius)
+                .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                .build();
+    }
 }

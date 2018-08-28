@@ -27,6 +27,8 @@ import com.teamproject.plastikproject.plastik.fragment.NotifikasiFragment;
 import com.teamproject.plastikproject.plastik.helper.SessionManager;
 import com.teamproject.plastikproject.plastik.imageslider.application.AppController;
 import com.teamproject.plastikproject.plastik.model.ModelUser;
+import com.teamproject.plastikproject.plastik.model.ResponseDataUser;
+import com.teamproject.plastikproject.plastik.model.ResponseUser;
 import com.teamproject.plastikproject.plastik.network.MyRetrofitClient;
 import com.teamproject.plastikproject.plastik.network.RestApi;
 
@@ -35,7 +37,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -58,8 +62,9 @@ public class HalamanUtamaActivity extends SessionManager implements BaseSliderVi
 
     @BindView(R.id.bottom_view)
     BottomNavigationView mBottomNavigationView;
+    private List<ResponseUser> listdatauser;
 
-        @Override
+    @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_main2);
@@ -226,7 +231,7 @@ public class HalamanUtamaActivity extends SessionManager implements BaseSliderVi
 
             //noinspection SimplifiableIfStatement
             if (id == R.id.mn_logout) {
-                showProgressDialog("proses login user");
+                showProgressDialog("loading . . .");
                 RestApi api = MyRetrofitClient.getInstaceRetrofit();
                 String token =sessionManager.getToken();
                 Log.d("testaja1",token);
@@ -238,7 +243,7 @@ public class HalamanUtamaActivity extends SessionManager implements BaseSliderVi
                         Intent intent = new Intent(HalamanUtamaActivity.this, LoginActivity.class);
                         startActivity(intent);
 
-                        myToast("berhasil logout");
+                        myToast("SUCCESSFULL");
 hideProgressDialog();
                         //                        if (response.isSuccessful()){
 //                            myToast("berhasil logout");
@@ -249,7 +254,7 @@ hideProgressDialog();
 
                     @Override
                     public void onFailure(Call<ModelUser> call, Throwable t) {
-myToast("no internet"+t.getMessage());
+myToast("No Internet");
 hideProgressDialog();
                     }
                 });
@@ -258,4 +263,54 @@ hideProgressDialog();
 
         }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getdatauserbaru();
     }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        getdatauserbaru();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        getdatauserbaru();
+    }
+
+    private void getdatauserbaru() {
+        RestApi api = MyRetrofitClient.getInstaceRetrofit();
+
+        final SessionManager ge = new SessionManager(HalamanUtamaActivity.this);
+        String id = ge.getIdUser();
+        Call<ResponseDataUser> userCall =api.getdatauser(id);
+        userCall.enqueue(new Callback<ResponseDataUser>() {
+            @Override
+            public void onResponse(Call<ResponseDataUser> call, retrofit2.Response<ResponseDataUser> response) {
+
+                if (response.isSuccessful()) {
+                    listdatauser = new ArrayList<ResponseUser>();
+
+                    listdatauser = response.body().getResponse();
+                    final String[] itemtropy = new String[listdatauser.size()];
+
+
+                    for (int i = 0; i < listdatauser.size(); i++) {
+                        //Storing names to string array
+                        itemtropy[i] = String.valueOf(listdatauser.get(i).getThropy());
+                        //       Toast.makeText(getApplicationContext(), " banyak button" + itemsnama, Toast.LENGTH_LONG).show();
+
+                    }
+                    ge.setTropy(itemtropy[0]);
+                }
+            }
+            @Override
+            public void onFailure(Call<ResponseDataUser> call, Throwable t) {
+
+            }
+        });
+    }
+}

@@ -5,19 +5,32 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
+import com.teamproject.plastikproject.adapters.PurchaseListAdapter;
 import com.teamproject.plastikproject.helpers.ContentHelper;
 import com.teamproject.plastikproject.model.PurchaseListModelbar;
+import com.teamproject.plastikproject.modeldataskedule.ResponseDataSkeduleuser;
+import com.teamproject.plastikproject.modeldataskedule.Responsedaske;
 import com.teamproject.plastikproject.plastik.helper.SessionManager;
+import com.teamproject.plastikproject.plastik.network.MyRetrofitClient;
+import com.teamproject.plastikproject.plastik.network.RestApi;
 import com.teamproject.plastikproject.utils.AlarmUtils;
 
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by rage on 5/15/15.
@@ -27,6 +40,9 @@ public class WritePurchaseListService extends IntentService {
     PurchaseListModelbar purchaseList ;
     private SessionManager manager;
     private int hasil;
+    List<Responsedaske> responsedaskes;
+
+    private PurchaseListAdapter adapter;
 
     public WritePurchaseListService() {
         super("WritePurchaseListService");
@@ -37,7 +53,7 @@ public class WritePurchaseListService extends IntentService {
     protected void onHandleIntent(Intent intent) {
 
         manager = new SessionManager(getApplicationContext());
-        purchaseList = (PurchaseListModelbar) intent.getExtras().getSerializable(LIST_EXTRA);
+       purchaseList = (PurchaseListModelbar) intent.getExtras().getSerializable(LIST_EXTRA);
 
         if (purchaseList != null) {
             if (purchaseList.getIdUser() < 0) {
@@ -58,7 +74,7 @@ public class WritePurchaseListService extends IntentService {
         Uri uri = ContentHelper.insertPurchaseList(getApplicationContext(), purchaseList);
 //                purchaseList.getIdUser(uri.getLastPathSegment());
         purchaseList.getIdUser();
-
+    //    getdatabaru();
         Date currentDate = new Date(System.currentTimeMillis());
         DateFormat df = new SimpleDateFormat("dd:MM:yy:HH:mm:ss");
         Calendar cal = Calendar.getInstance();
@@ -72,18 +88,7 @@ public class WritePurchaseListService extends IntentService {
         // desc =listNameEdit.getText().toString();
         String  waktusekarang = sdf.format(sq);
         String waktuset =manager.getTime();
-
-
-
-
-
-
         Date currentDate1 = new Date(purchaseList.getTime());
-
-        //printing value of Date
-
-       // System.out.println("current Date: " + currentDate);
-
         DateFormat df1 = new SimpleDateFormat("dd:MM:yy:HH:mm:ss");
 
         //formatted value of current Date
@@ -120,12 +125,19 @@ public class WritePurchaseListService extends IntentService {
         }
         Calendar calendar = Calendar.getInstance();
         int days = calendar.get(Calendar.DAY_OF_WEEK);
-
+        Log.d("jalanwaktu",waktuser);
         if(hasil==days && waktuser.equals(waktusekarang)){
+//            getApplicationContext().startService(new Intent(getApplicationContext(), AlarmUtils.class)
+//                    .putExtra(AlarmUtils.LIST_EXTRA1, purchaseList)
+//            );
             AlarmUtils alarmUtils = new AlarmUtils(getApplicationContext());
             alarmUtils.setListAlarm(purchaseList);
 
             Log.d("jalan","dsdsds");
+
+        }else{
+            Log.d("jalangagal","dsdsds");
+
         }
 //
 //                long sekarang = Long.parseLong(waktusekarang);
@@ -136,7 +148,7 @@ public class WritePurchaseListService extends IntentService {
 
     }
 
-    private Timer timer;
+private Timer timer;
     private TimerTask timerTask;
     long oldTime=0;
     public void startTimer() {
@@ -147,7 +159,7 @@ public class WritePurchaseListService extends IntentService {
         initializeTimerTask();
 
         //schedule the timer, to wake up every 1 second
-        timer.schedule(timerTask, 1000, 1000); //
+        timer.schedule(timerTask,1000, 1000); //
     }
 
     public void initializeTimerTask() {
@@ -165,19 +177,6 @@ public class WritePurchaseListService extends IntentService {
 //        return START_STICKY;
 //    }
 
-
-    @Override
-    public void onDestroy() {
-        try {
-            timer.cancel();
-            timerTask.cancel();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Intent intent = new Intent("com.teamproject.plastikprojectku");
-        intent.putExtra("yourvalue", "torestore");
-        sendBroadcast(intent);
-    }
 
 
 }

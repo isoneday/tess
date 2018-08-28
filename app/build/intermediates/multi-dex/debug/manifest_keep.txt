@@ -1,0 +1,3 @@
+# Referenced at /Volumes/IMASTUDIO/baggit/PumpkinList-android-master/app/build/intermediates/manifests/full/debug/AndroidManifest.xml:37
+-keep class com.teamproject.plastikproject.AppClass { <init>(...); }
+

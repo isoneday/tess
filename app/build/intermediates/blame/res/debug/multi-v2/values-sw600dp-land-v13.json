@@ -1,0 +1,26 @@
+{
+    "logs": [
+        {
+            "outputFile": "/Volumes/IMASTUDIO/baggit/PumpkinList-android-master/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-sw600dp-land-v13/values-sw600dp-land-v13.xml",
+            "map": [
+                {
+                    "source": "/Volumes/IMASTUDIO/baggit/PumpkinList-android-master/app/src/main/res/values-sw600dp-land/dimens.xml",
+                    "from": {
+                        "startLines": "4,2",
+                        "startColumns": "4,4",
+                        "startOffsets": "115,55",
+                        "endColumns": "51,58",
+                        "endOffsets": "162,109"
+                    },
+                    "to": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,107",
+                        "endColumns": "51,58",
+                        "endOffsets": "102,161"
+                    }
+                }
+            ]
+        }
+    ]
+}

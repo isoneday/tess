@@ -144,31 +144,22 @@
                 android:layout_below="@+id/time_layout"
                 android:id="@+id/place_layout">
 
-                <Spinner
+                <Button
                     android:id="@+id/shops_spinner"
-                    android:layout_width="@dimen/bottom_toolbar_spinner_width"
+                    android:layout_width="match_parent"
+                    android:text="save"
                     android:layout_height="wrap_content"
                     android:background="@drawable/background_normal"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/purchase_edit_bottom_shop_label"
-                    android:id="@+id/shop_text"
-                    android:gravity="center_vertical"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_toLeftOf="@+id/shops_spinner"
-                    android:layout_toStartOf="@+id/shops_spinner" />
 
             </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_below="@+id/place_layout">
 
                 <Spinner

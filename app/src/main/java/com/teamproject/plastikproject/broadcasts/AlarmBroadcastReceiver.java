@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -21,6 +22,7 @@ import com.teamproject.plastikproject.helpers.AppConstants;
 import com.teamproject.plastikproject.helpers.ShoppingContentProvider;
 import com.teamproject.plastikproject.helpers.SqlDbHelper;
 import com.teamproject.plastikproject.plastik.helper.SessionManager;
+import com.teamproject.plastikproject.utils.AlarmUtils;
 
 import java.util.Random;
 
@@ -36,8 +38,8 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         if (intent.getExtras() != null) {
   //          SessionManager manager =new SessionManager(context);
 //            int id = Integer.parseInt(manager.getIdincre());
-            Log.i("Service Stops", "Ohhhhhhh");
-            context.startService(new Intent(context, WritePurchaseListService.class));;
+//            Log.i("Service Stops", "Ohhhhhhh");
+//            context.startService(new Intent(context, WritePurchaseListService.class));;
             Long dbId = intent.getExtras().getLong(AppConstants.EXTRA_LIST_ID, -1);
             if (dbId > 0) {
                 //showNotification(context, dbId);
@@ -64,8 +66,8 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                         null,
                         null
                 );
-                mediaPlayer = MediaPlayer.create(context,R.raw.ringtone);
-                mediaPlayer.start();
+//                mediaPlayer = MediaPlayer.create(context,R.raw.ringtone);
+//                mediaPlayer.start();
                 String list = "today";
 //                PurchaseListModelbar list = ContentHelper.getPurchaseList(cursor);
                 showNotification(context, list);
@@ -74,10 +76,10 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
     }
 
     private void showNotification(Context context, String list) {
-        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher);
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_baggit);
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context)
-                        .setSmallIcon(R.drawable.ic_notification_icon)
+                        .setSmallIcon(R.mipmap.ic_baggit)
                         .setLargeIcon(bitmap)
                         .setContentTitle("today")
                         .setContentText(context.getString(R.string.notification_alarm_description))
@@ -94,6 +96,8 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                         startIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
+        Uri uri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        builder.setSound(uri);
         builder.setContentIntent(pendingIntent);
         Notification notification = builder.build();
         notification.defaults = Notification.DEFAULT_ALL;
@@ -101,6 +105,9 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(AppConstants.NOTIFICATION_ID, notification);
+        builder.setAutoCancel(true);
+//        AlarmUtils alarmUtils = new AlarmUtils(context);
+//        alarmUtils.cancelListAlarm(purchaseList);
     }
 //    private void showNotification(Context context, PurchaseListModelbar list) {
 //        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher);

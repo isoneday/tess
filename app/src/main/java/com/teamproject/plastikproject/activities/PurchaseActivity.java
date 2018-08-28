@@ -10,6 +10,7 @@ import com.teamproject.plastikproject.fragments.PurchaseManageFragmentoribaru;
 import com.teamproject.plastikproject.helpers.ActivityHelper;
 import com.teamproject.plastikproject.helpers.AppConstants;
 import com.teamproject.plastikproject.helpers.SharedPrefHelper;
+import com.teamproject.plastikproject.plastik.LoginActivity;
 
 
 /**
@@ -18,6 +19,7 @@ import com.teamproject.plastikproject.helpers.SharedPrefHelper;
 public class PurchaseActivity extends BaseActivity implements PurchaseManageFragmentoribaru.OnPurchaseListMainFragmentListener, FragmentManager.OnBackStackChangedListener {
     private static final String TAG = PurchaseActivity.class.getSimpleName();
     private PurchaseEditFragmentbaru purchaseListEditFragment;
+    private Bundle bundle;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,10 +70,13 @@ public class PurchaseActivity extends BaseActivity implements PurchaseManageFrag
     @Override
     public void onPurchaseListMainFragmentClickListener() {
         purchaseListEditFragment = new PurchaseEditFragmentbaru();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, purchaseListEditFragment)
-                .addToBackStack(AppConstants.BACK_STACK_PURCHASE)
-                .commit();
+
+        purchaseListEditFragment.show(getSupportFragmentManager(),"customdialog");
+//        getSupportFragmentManager().beginTransaction()
+//                .replace(R.id.container, purchaseListEditFragment)
+//                .addToBackStack(AppConstants.BACK_STACK_PURCHASE)
+//                .commit();
+
     }
 
     @Override
@@ -88,7 +93,8 @@ public class PurchaseActivity extends BaseActivity implements PurchaseManageFrag
 
     private void showList(long id) {
         if (purchaseListEditFragment != null) {
-            purchaseListEditFragment.onBackPressed();
+            bundle = new Bundle();
+            purchaseListEditFragment.onCreateDialog(bundle);
             getSupportFragmentManager().popBackStack();
             purchaseListEditFragment = null;
         }
@@ -111,7 +117,7 @@ public class PurchaseActivity extends BaseActivity implements PurchaseManageFrag
     public void menuOnClick(int menuId) {
         super.menuOnClick(menuId);
         if (menuId != AppConstants.MENU_LOGOUT && purchaseListEditFragment != null) {
-            purchaseListEditFragment.onBackPressed();
+            purchaseListEditFragment.onCreateDialog(bundle);
             purchaseListEditFragment = null;
         }
     }

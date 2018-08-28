@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="birutuaa">#5EB1CB</color>
-    <color name="colorPrimary">#68B3CF</color>
-    <color name="colorPrimaryDark">#68B3CF</color>
+    <color name="birutuaa">#D5BFA3</color>
+    <color name="colorPrimary">#D5BFA3</color>
+    <color name="colorPrimaryDark">#CE9671</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="theme_accent">#68B3CF</color>
-    <color name="theme_primary">#68B3CF</color>
+    <color name="theme_accent">#D5BFA3</color>
+    <color name="theme_primary">#D5BFA3</color>
     <color name="theme_primary_dark">#ffcd7226</color>
     <color name="warnabutton">#44515B</color>
     <color name="theme_toolbar_hint">#d4e3c09a</color>
@@ -26,5 +26,39 @@
     <color name="bgBottomNavigation">#fe485a</color>
     <color name="generalColor">#21002F</color>
     <color name="fabButtonColor">#cc0000</color>
+    <color name="Background">#408D42</color>
 
+    <color name="Background.CardView">#DDDDDD</color>
+
+    <color name="TextColor.White">#FFFFFF</color>
+    <color name="TextColor.Gray">#999999</color>
+    <color name="TextColor.DarkGray">#333333</color>
+    <color name="TextColor.Black">#000000</color>
+
+    <color name="Divider">#333333</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorDarkerGray">#d4d4d4</color>
+
+    <color name="colorTeal_50">#E0F2F1</color>
+    <color name="colorTeal_100">#B2DFDB</color>
+    <color name="colorTeal_200">#80CBC4</color>
+    <color name="colorTeal_300">#4DB6AC</color>
+    <color name="colorTeal_400">#26A69A</color>
+    <color name="colorTeal_500">#009688</color>
+    <color name="colorTeal_600">#00897B</color>
+    <color name="colorTeal_700">#00796B</color>
+    <color name="colorTeal_800">#00695C</color>
+    <color name="colorTeal_900">#004D40</color>
+
+    <color name="colorRed_500">#F44336</color>
+    <color name="colorRed_900">#D71C1C</color>
+    <color name="colorRed_A700">#D50000</color>
+    <color name="background">#D5BFA3</color>
+    <color name="colorPink_900">#880E4F</color>
+
+    <color name="colorGrey_800">#a0757575</color>
+    <color name="colorGrey">#212121</color>
+    <color name="colorBlack">#000000</color>
+
+    <color name="colorCustom">#283339</color>
 </resources>

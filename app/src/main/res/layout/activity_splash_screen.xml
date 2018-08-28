@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:orientation="vertical"
+    android:background="@drawable/bg"
     android:layout_height="match_parent"
-
     >
     <ImageView
         android:layout_width="match_parent"
@@ -17,7 +17,6 @@
         android:gravity="center"
         android:textSize="29sp"
         android:layout_marginTop="250dp"
-        android:fontFamily="casual"
 
         android:textColor="@color/hijau"
         android:layout_width="match_parent"

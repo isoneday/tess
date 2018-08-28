@@ -15,6 +15,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.teamproject.plastikproject.R;
+import com.teamproject.plastikproject.alarmapp.ui.activity.BootAlarmActivity;
+import com.teamproject.plastikproject.alarmapp.ui.receiver.AlarmClockReceiver;
 import com.teamproject.plastikproject.plastik.helper.SessionManager;
 import com.teamproject.plastikproject.plastik.model.ResponseChangeUsername;
 import com.teamproject.plastikproject.plastik.model.ResponseDataUser;
@@ -35,7 +37,7 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MyAccountFragment extends Fragment {
+public class MyAccountFragment extends Fragment implements BootAlarmActivity.Ongetdatalagiya {
 
 
     @BindView(R.id.txtusername)
@@ -48,6 +50,7 @@ public class MyAccountFragment extends Fragment {
     TextView txtemail;
     Unbinder unbinder;
     private List<ResponseUser> listdatauser;
+    private SessionManager manager;
 
     public MyAccountFragment() {
         // Required empty public constructor
@@ -60,7 +63,8 @@ public class MyAccountFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_my_account, container, false);
         unbinder = ButterKnife.bind(this, view);
-        final ProgressDialog dialog =ProgressDialog.show(getActivity(),"","loading . . .");
+        manager = new SessionManager(getActivity());
+
         btnchangeusername.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,24 +78,24 @@ public class MyAccountFragment extends Fragment {
                     public void onClick(View v) {
                         String usernamebaru =edtusernamebaru.getText().toString();
                         if (TextUtils.isEmpty(usernamebaru)){
-                            edtusernamebaru.setError("username tidak boleh kosong");
+                            edtusernamebaru.setError(getString(R.string.usernameempty));
                             edtusernamebaru.requestFocus();
                         }else{
                             final ProgressDialog dialog1 =ProgressDialog.show(getContext(),"loading","");
                             RestApi api = MyRetrofitClient.getInstaceRetrofit();
-                            SessionManager manager =new SessionManager(getActivity());
-                            String idtoken =manager.getToken();
+                            String email = manager.getEmail();
+                            String idtoken = manager.getToken();
                             String iduser1= manager.getIdUser();
-                            Call<ResponseChangeUsername> usernameCall=api.changeusername(iduser1,idtoken,usernamebaru,"iswandi.saputra11@gmail.com","0");
+                            Call<ResponseChangeUsername> usernameCall=api.changeusername(iduser1,idtoken,usernamebaru,email,"0");
                             usernameCall.enqueue(new Callback<ResponseChangeUsername>() {
                                 @Override
                                 public void onResponse(Call<ResponseChangeUsername> call, Response<ResponseChangeUsername> response) {
                                  d.dismiss();
                                    dialog1.dismiss();
                                     if (response.isSuccessful()){
-                                        Toast.makeText(getContext(), "berhasil", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getContext(), "successfully", Toast.LENGTH_SHORT).show();
                                     }else{
-                                        Toast.makeText(getContext(), "gagal", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getContext(), "failed", Toast.LENGTH_SHORT).show();
 
                                     }
                                 }
@@ -109,14 +113,21 @@ public class MyAccountFragment extends Fragment {
                 });
             }
         });
+        getdata();
+        return view;
+    }
+
+    private void getdata() {
+//        final ProgressDialog dialog =ProgressDialog.show(getActivity(),"","loading . . .");
+
         RestApi api = MyRetrofitClient.getInstaceRetrofit();
-        SessionManager ge = new SessionManager(getActivity());
+        final SessionManager ge = new SessionManager(getActivity());
         String id = ge.getIdUser();
         Call<ResponseDataUser> userCall =api.getdatauser(id);
         userCall.enqueue(new Callback<ResponseDataUser>() {
             @Override
             public void onResponse(Call<ResponseDataUser> call, Response<ResponseDataUser> response) {
-                dialog.dismiss();
+             //   dialog.dismiss();
 
                 if (response.isSuccessful()){
                     listdatauser = new ArrayList<ResponseUser>();
@@ -124,7 +135,8 @@ public class MyAccountFragment extends Fragment {
                     listdatauser = response.body().getResponse();
                     final String[] itemsemail = new String[listdatauser.size()];
                     final String[] itemsnama = new String[listdatauser.size()];
-   final String[] itemsusername = new String[listdatauser.size()];
+                    final String[] itemsusername = new String[listdatauser.size()];
+                    final String[] itemtropy = new String[listdatauser.size()];
 
 
                     for (int i = 0; i < listdatauser.size(); i++) {
@@ -132,6 +144,7 @@ public class MyAccountFragment extends Fragment {
                         itemsemail[i] = listdatauser.get(i).getEmail().toString();
                         itemsnama[i] = listdatauser.get(i).getName().toString();
                         itemsusername[i] = listdatauser.get(i).getName().toString();
+                        itemtropy[i] = String.valueOf(listdatauser.get(i).getThropy());
                         //       Toast.makeText(getApplicationContext(), " banyak button" + itemsnama, Toast.LENGTH_LONG).show();
 
                     }
@@ -141,24 +154,30 @@ public class MyAccountFragment extends Fragment {
                     txtnama.setText(name);
                     txtemail.setText(email);
                     txtusername.setText(usernmae);
+                    ge.setTropy(itemtropy[0]);
                 }
                 else{
-                    Toast.makeText(getActivity(), "gagal ya"+response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "failed", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseDataUser> call, Throwable t) {
-                dialog.dismiss();
+       //         dialog.dismiss();
 
             }
         });
-        return view;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+
+    @Override
+    public void getdatalagiya() {
+        getdata();
     }
 }
